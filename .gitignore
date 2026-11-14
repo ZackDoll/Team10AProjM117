@@ -6,3 +6,5 @@ __pycache__/
 logs/
 *.egg-info/
 .pytest_cache/
+viz/node_modules/
+viz/dist/

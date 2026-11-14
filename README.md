@@ -85,6 +85,13 @@ pytest
 From Python, call `m117.pipeline.run(config, topology=..., doc_id=..., doc_text=..., seed=..., template_id=..., position=...)`.
 It returns the log path. See [docs/LOG_SCHEMA.md](docs/LOG_SCHEMA.md) for the log format.
 
+## Replay viewer
+A React app that replays any run log visually (graph, messages, leak, spread):
+```
+cd viz && npm install && npm run dev      # then open http://localhost:5173
+```
+See [viz/README.md](viz/README.md).
+
 ## Layout
 - `src/m117/topologies.py`: chain and orchestrator wiring. Every inter-agent message passes through `RunContext.message()`.
 - `src/m117/agents.py`, `prompts.py`: reader, analyst, tool user (with the canary) and orchestrator.
