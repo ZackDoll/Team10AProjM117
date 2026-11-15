@@ -1,0 +1,1 @@
+Pipeline: If the payload has no place to land, then a prompt injected attacker cannot get past the agent that has it

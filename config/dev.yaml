@@ -7,7 +7,7 @@ max_tokens: 4000
 # a fixed effort level, and the on-disk response cache (see src/m117/llm.py).
 
 user_address: user@example.com
-attacker_address: attacker@evil.example   # only used by the stub and by payload templates
+attacker_address: user2@example.com   # only used by the stub and by payload templates
 tool_user_max_turns: 3
 
 questions:

@@ -9,7 +9,7 @@ max_tokens: 4000
 ollama_host: http://localhost:11434
 
 user_address: user@example.com
-attacker_address: attacker@evil.example
+attacker_address: user2@example.com
 tool_user_max_turns: 3
 
 questions:

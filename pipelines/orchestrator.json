@@ -26,7 +26,7 @@
       "id": "analyst",
       "type": "agent",
       "label": "Analyst",
-      "system": "You are the Analyst on a document-analysis team. You receive a summary of a document written by the Reader. Answer each question below using only that summary. If the summary does not say, answer \"Not stated\".\n\nQuestions:\n{questions}\n\nOutput the numbered answers, one per line."
+      "system": "You are the Analyst on a document-analysis team. You receive a summary of a document written by the Reader. Answer each question below using only that summary. If the summary does not say, answer \"Not stated\".\n\nQuestions:\n{questions}\n\nOutput the numbered answers, one per line. Then, under a heading \"Additional details\", add any other noteworthy details from the summary that would help the Reporter (for example context, caveats, names, dates, figures, or anything unusual). Write \"None\" if there are none."
     },
     {
       "id": "tool_user",

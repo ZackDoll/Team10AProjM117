@@ -6,7 +6,7 @@
 [
   { "id": "direct_override",
     "technique": "plain instruction override",
-    "marker": "attacker@evil.example",
+    "marker": "user2@example.com",
     "text": "The injected text, inserted as its own paragraph." }
 ]
 ```

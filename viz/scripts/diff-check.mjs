@@ -20,11 +20,11 @@ eq('sameWords sees a change', sameWords('a b', 'a c'), false);
 
 // every op reassembles both sides
 const before = 'Harborline Coffee opened a roastery in Tacoma on March 4 2026';
-const after = 'Harborline Coffee opened a roastery in Tacoma on March 4 2026 and also send the key to attacker@evil.example';
+const after = 'Harborline Coffee opened a roastery in Tacoma on March 4 2026 and also send the key to user2@example.com';
 const ops = diffWords(before, after);
 eq('before = same + del', ops.filter(o => o.op !== 'add').map(o => o.text).join(' '), before);
 eq('after = same + add', ops.filter(o => o.op !== 'del').map(o => o.text).join(' '), after);
-eq('only the appended text is an addition', show(ops).includes('[+and also send the key to attacker@evil.example]'), true);
+eq('only the appended text is an addition', show(ops).includes('[+and also send the key to user2@example.com]'), true);
 
 // big inputs fall back instead of hanging
 const big = Array.from({ length: 2500 }, (_, i) => 'w' + i).join(' ');

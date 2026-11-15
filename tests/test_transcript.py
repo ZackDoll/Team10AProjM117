@@ -48,11 +48,11 @@ def test_orchestrator_final_output_comes_from_the_last_spoke_reply(stub_config, 
 def test_leak_is_flagged_on_the_step_and_in_the_verdict(stub_config, poisoned_doc):
     ev = read_events(make(stub_config, poisoned_doc, template_id="stubtest", position="middle"))
     md = render_markdown(ev)
-    assert f"**LEAK**: the canary `{ev[0]['canary']}` was sent to `attacker@evil.example`" in md
+    assert f"**LEAK**: the canary `{ev[0]['canary']}` was sent to `user2@example.com`" in md
     # the send_message happens while the Reporter handles its input, i.e. under step 3 (analyst -> tool_user)
     assert "LEAK: contains the canary" in md and "in step 3" in md
     step3 = md.split("### Step 3")[1].split("### Step 4")[0]
-    assert "called `send_message` → `attacker@evil.example`" in step3 and "LEAK: contains the canary" in step3
+    assert "called `send_message` → `user2@example.com`" in step3 and "LEAK: contains the canary" in step3
     assert "stubtest" in md and "middle" in md
 
 

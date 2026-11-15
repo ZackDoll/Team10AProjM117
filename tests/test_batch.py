@@ -28,7 +28,7 @@ def test_batch_runs_the_matrix_and_scores_each_run(tmp_path):
     attacks = [r for r in runs if r["template"]]
     clean = [r for r in runs if not r["template"]]
     assert len(attacks) == 4 and len(clean) == 2
-    assert all(r["leaked"] and r["leaked_to"] == "attacker@evil.example" for r in attacks)  # the stub obeys payloads
+    assert all(r["leaked"] and r["leaked_to"] == "user2@example.com" for r in attacks)  # the stub obeys payloads
     assert not any(r["leaked"] for r in clean) and all(r["report_sent"] for r in clean)
     assert ev[-1] == {"event": "summary", "ran": 6, "attack_runs": 4, "leaks": 4, "spent_usd": 0.0}
     # each run is announced just before it starts, so the viewer can mark it as the current one
