@@ -14,6 +14,8 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
@@ -154,9 +156,113 @@ class AnthropicClient:
         return LLMResponse(content, resp.stop_reason, usage)
 
 
+
+# --------------------------------------------------------------------------- ollama
+
+def _ollama_messages(system: str, messages: list[dict]) -> list[dict]:
+    """Anthropic-shaped (system + messages-with-content-blocks) -> Ollama's flat role list."""
+    out = [{"role": "system", "content": system}]
+    for m in messages:
+        role, content = m["role"], m["content"]
+        if isinstance(content, str):
+            out.append({"role": role, "content": content})
+            continue
+        if role == "assistant":
+            text = "\n".join(b["text"] for b in content if b.get("type") == "text")
+            calls = [b for b in content if b.get("type") == "tool_use"]
+            msg: dict[str, Any] = {"role": "assistant", "content": text}
+            if calls:
+                msg["tool_calls"] = [{"function": {"name": c["name"], "arguments": c.get("input") or {}}}
+                                      for c in calls]
+            out.append(msg)
+        else:  # user turn carrying tool_result blocks (and/or plain text blocks)
+            for b in content:
+                if b.get("type") == "tool_result":
+                    c = b.get("content")
+                    out.append({"role": "tool", "content": c if isinstance(c, str) else json.dumps(c)})
+                elif b.get("type") == "text":
+                    out.append({"role": role, "content": b["text"]})
+    return out
+
+
+def _ollama_tools(tools: list[dict] | None) -> list[dict] | None:
+    if not tools:
+        return None
+    return [{"type": "function", "function": {"name": t["name"], "description": t.get("description", ""),
+                                               "parameters": t["input_schema"]}} for t in tools]
+
+
+class OllamaClient:
+    """Local open-weight model via Ollama's HTTP API. No API key and no cost, and -- unlike the
+    Anthropic models -- no deliberate training against prompt injection, so it is the backend to
+    use when the Anthropic model resists every attack. Needs `ollama serve` running and the model
+    already pulled (`ollama pull <model>`); see docs/OLLAMA.md."""
+
+    def __init__(self, config: Config, meter: CostMeter):
+        self.model = config.model
+        self.config = config
+        self.meter = meter
+        self.host = config.ollama_host.rstrip("/")
+        self.cache = DiskCache(config.cache_dir)
+
+    def complete(self, *, system, messages, tools, seed, agent) -> LLMResponse:
+        payload: dict[str, Any] = {
+            "model": self.model,
+            "messages": _ollama_messages(system, messages),
+            "stream": False,
+            # temperature 0 + a fixed seed for determinism; mirrors the cache-based determinism
+            # story used for the Anthropic backend, which can't set either.
+            "options": {"temperature": 0, "seed": seed, "num_predict": self.config.max_tokens},
+        }
+        ollama_tools = _ollama_tools(tools)
+        if ollama_tools:
+            payload["tools"] = ollama_tools
+        key = DiskCache.key({**payload, "_backend": "ollama"})
+        hit = self.cache.get(key)
+        if hit is not None:
+            return LLMResponse(hit["content"], hit["stop_reason"], hit["usage"], cached=True)
+
+        body = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(f"{self.host}/api/chat", data=body, method="POST",
+                                      headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=180) as resp:
+                data = json.loads(resp.read())
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            raise RuntimeError(
+                f"Could not reach Ollama at {self.host}. Run `ollama serve`, and "
+                f"`ollama pull {self.model}` if you haven't yet. ({e})"
+            ) from e
+
+        msg = data.get("message", {})
+        content: list[dict[str, Any]] = []
+        text = msg.get("content") or ""
+        if text:
+            content.append({"type": "text", "text": text})
+        tool_calls = msg.get("tool_calls") or []
+        for i, tc in enumerate(tool_calls):
+            fn = tc.get("function", {})
+            args = fn.get("arguments") or {}
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except json.JSONDecodeError:
+                    args = {"raw": args}
+            content.append({"type": "tool_use", "id": f"ollama_{seed}_{i}", "name": fn.get("name", ""),
+                             "input": args})
+        stop_reason = "tool_use" if tool_calls else "end_turn"
+        usage = {"input_tokens": data.get("prompt_eval_count", 0), "output_tokens": data.get("eval_count", 0)}
+        self.meter.add(self.model, usage)  # $0 unless you add a price for this model in config
+        out = {"content": content, "stop_reason": stop_reason, "usage": usage}
+        self.cache.put(key, out)
+        return LLMResponse(content, stop_reason, usage)
+
+
 def make_client(config: Config, meter: CostMeter) -> LLMClient:
     if config.backend == "stub":
         return StubClient(config)
     if config.backend == "anthropic":
         return AnthropicClient(config, meter)
+    if config.backend == "ollama":
+        return OllamaClient(config, meter)
     raise ValueError(f"unknown backend {config.backend!r}")

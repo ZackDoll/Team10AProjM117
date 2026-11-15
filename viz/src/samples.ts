@@ -1,10 +1,11 @@
-// Bundled logs. Vite inlines them at build time, so there is no fetch and no server config.
-// Sample logs (stub backend) ship with the repo. Real runs in logs/runs/ show up automatically
-// when they exist (restart `npm run dev` if you add some while it is running).
+// Bundled logs. Vite inlines them at build time, so the static build needs no server.
+// The stub sample logs ship with the repo. Real runs in logs/runs/ are bundled into a static
+// build too; under `npm run dev` they are fetched live from /api/logs instead (see api.ts), so
+// new runs appear without a restart.
 const samples = import.meta.glob('../../tests/fixtures/sample_*.jsonl', {
   query: '?raw', import: 'default', eager: true,
 }) as Record<string, string>;
-const real = import.meta.glob('../../logs/runs/*.jsonl', {
+const real = import.meta.env.DEV ? {} : import.meta.glob('../../logs/runs/*.jsonl', {
   query: '?raw', import: 'default', eager: true,
 }) as Record<string, string>;
 

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { getLogs } from './api';
 import { parseRun } from './parse';
+import { RunForm } from './RunForm';
 import { RunPanel } from './RunPanel';
 import { SAMPLES } from './samples';
 import type { Run, Topology } from './types';
@@ -127,6 +129,39 @@ export default function App() {
     };
   }, []);
 
+  // Add or replace a run by name (a rerun with the same run id replaces the old one).
+  const upsert = (name: string, text: string): { run: Run; index: number; prevM: number } | null => {
+    let run: Run;
+    try { run = parseRun(label(name), text); } catch { return null; } // no run_start yet
+    const cur = latest.current.runs;
+    const i = cur.findIndex(r => r.name === run.name);
+    const next = i >= 0 ? cur.map((r, k) => (k === i ? run : r)) : [...cur, run];
+    latest.current.runs = next; // polling can fire again before React re-renders
+    setRuns(next);
+    return { run, index: i >= 0 ? i : next.length - 1, prevM: i >= 0 ? cur[i].M : 0 };
+  };
+
+  // Real runs from logs/runs/, fetched from the dev server so new ones need no restart.
+  useEffect(() => {
+    getLogs().then(logs => { for (const l of logs) upsert(l.name, l.text); }).catch(() => { /* static build */ });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // A run started from the form wrote more log lines: show it in its panel and follow the newest hop.
+  const followed = useRef<string | null>(null);
+  const onLive = (panel: 0 | 1, name: string, text: string) => {
+    const u = upsert(name, text);
+    if (!u) return;
+    setSel(prev => (panel === 0 ? [u.index, prev[1]] : [prev[0], u.index]));
+    setPlaying(false);
+    const fresh = followed.current !== u.run.name;
+    followed.current = u.run.name;
+    if (fresh || u.run.M !== u.prevM) {
+      setStep(u.run.M);
+      setAnimStep(u.run.M > (fresh ? 0 : u.prevM) ? u.run.M : -1);
+    }
+  };
+
   const setPanelRun = (p: number, i: number) => setSel(prev => (p === 0 ? [i, prev[1]] : [prev[0], i]));
   const pickTopology = (p: number, topo: Topology) => {
     const here = runs[sel[p]];
@@ -148,6 +183,9 @@ export default function App() {
           <kbd>{'←'}</kbd>/<kbd>{'→'}</kbd> step, <kbd>Home</kbd> restart.
         </p>
       </header>
+
+      <RunForm onLive={onLive} onStartBoth={() => setCompare(true)}
+        onNote={(text, error) => setNote({ text, error })} />
 
       <section className="controls" aria-label="Replay controls">
         <div className="row">

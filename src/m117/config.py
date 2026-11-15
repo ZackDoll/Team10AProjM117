@@ -25,6 +25,7 @@ class Config:
     prices_per_mtok: dict[str, list[float]] = field(default_factory=dict)
     log_dir: str = "logs"
     cache_dir: str = ".cache/llm"
+    ollama_host: str = "http://localhost:11434"  # backend: ollama only; local model, no cost
 
     @classmethod
     def load(cls, path: str | Path, **overrides) -> "Config":
