@@ -346,7 +346,8 @@ def generate(out: Path) -> dict:
             t = order[g % len(order)]  # every length tier is longer than the cycle, so every template meets every length
             g += 1
             # a template's own documents cycle start, middle, end: every template-position pair is used 3 or 4 times
-            combos[i] = (t, POSITIONS[used[t] % len(POSITIONS)])
+            # (offset by the template's place in the cycle, so the extra 4th document of some templates doesn't always land on "start")
+            combos[i] = (t, POSITIONS[(used[t] + order.index(t)) % len(POSITIONS)])
             used[t] += 1
 
     answers: dict[str, list] = {}
