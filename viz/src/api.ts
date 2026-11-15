@@ -59,6 +59,8 @@ export interface BatchRequest {
   pipelines: string[]; docs: string[]; templateIds: string[]; positions: string[]; seeds: number[];
   /** run each document with its own assigned template and position (templateIds and positions are then ignored) */
   assigned?: boolean;
+  /** leave runs that already have a log (on this model) alone instead of replacing them */
+  skipExisting?: boolean;
   withClean: boolean; backend: 'anthropic' | 'stub' | 'ollama'; maxRuns: number;
 }
 export interface BatchRow {

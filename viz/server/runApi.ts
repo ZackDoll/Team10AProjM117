@@ -395,6 +395,7 @@ export function runApi(): Plugin {
             else if (tplSel.length) args.push('--template-ids', ...tplSel, '--positions', ...positions);
             else args.push('--no-attacks');
             if (withClean) args.push('--with-clean');
+            if (b.skipExisting === true) args.push('--skip-existing');
 
             const job: BatchJob = { id: String(nextId++), state: 'running', total: 0, rows: [], current: null, overwrites: [], error: null,
               spentUsd: 0, summary: null, model: null, stderr: '', startedAt: Date.now(), child: null };

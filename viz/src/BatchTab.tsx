@@ -38,6 +38,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
   const [assignedMode, setAssignedMode] = useState(false); // each document with its own assigned poison
   const [seedText, setSeedText] = useState('1');
   const [withClean, setWithClean] = useState(true);
+  const [skipExisting, setSkipExisting] = useState(false); // keep runs that already have logs instead of replacing them
   const [backend, setBackend] = useState<Backend>('anthropic');
   const [maxRuns, setMaxRuns] = useState(100);
   const [job, setJob] = useState<string | null>(null);
@@ -110,10 +111,11 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     return out;
   }, [pSel, dSel, tSel, posSel, seeds, withClean, model, assignedMode, meta]);
 
-  const existing = useMemo(() => {
-    const byName = new Map(runs.map(r => [r.name, r]));
-    return plan.filter(p => byName.has(p.id)).map(p => byName.get(p.id)!);
-  }, [plan, runs]);
+  // runs of the plan that already have a log. With "skip existing" they stay in the grid, showing their saved result, but are not run again.
+  const byName = useMemo(() => new Map(runs.map(r => [r.name, r])), [runs]);
+  const skipped = useMemo(() => new Set(skipExisting ? plan.filter(p => byName.has(p.id)).map(p => p.id) : []), [skipExisting, plan, byName]);
+  const toRun = useMemo(() => plan.filter(p => !skipped.has(p.id)), [plan, skipped]);
+  const existing = useMemo(() => toRun.filter(p => byName.has(p.id)).map(p => byName.get(p.id)!), [toRun, byName]);
 
   const estimate = useMemo(() => {
     if (backend !== 'anthropic') return { text: 'free', known: true };
@@ -121,19 +123,20 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
       .map(r => r.end!.cost_usd as number);
     if (!costs.length) return { text: 'unknown until a run has been timed, but a Haiku run is well under a cent', known: false };
     const avg = costs.reduce((a, b) => a + b, 0) / costs.length;
-    return { text: `about $${(avg * plan.length).toFixed(3)} (average of ${costs.length} earlier run${costs.length > 1 ? 's' : ''} on ${status?.model})`, known: true };
-  }, [backend, runs, status, plan.length]);
+    return { text: `about $${(avg * toRun.length).toFixed(3)} (average of ${costs.length} earlier run${costs.length > 1 ? 's' : ''} on ${status?.model})`, known: true };
+  }, [backend, runs, status, toRun.length]);
 
   const running = !!job;
   const keyMissing = backend === 'anthropic' && status && !status.hasKey;
   const ollamaDown = backend === 'ollama' && status && !status.ollamaReachable;
   const busyElsewhere = !!(status?.running || status?.batchRunning) && !running;
-  const tooMany = plan.length > maxRuns;
+  const tooMany = toRun.length > maxRuns;
   const invalid = !seeds ? 'Seeds must be whole numbers, separated by spaces or commas.'
     : !pSel.length ? 'Pick at least one pipeline.' : !dSel.length ? 'Pick at least one document.'
     : unassigned.length ? `${unassigned.length} selected document${unassigned.length > 1 ? 's have' : ' has'} no assigned poison (only the documents in data/docs do): ${unassigned.slice(0, 3).map(docStem).join(', ')}${unassigned.length > 3 ? ', …' : ''}`
     : !plan.length ? 'Nothing to run: pick attack templates (and a position) or include clean runs.'
-    : tooMany ? `${plan.length} runs is over the cap of ${maxRuns}. Raise the cap on purpose, or pick fewer.`
+    : !toRun.length ? 'Every selected run already has a log, so there is nothing to run. Untick "skip runs that already have logs" to rerun them.'
+    : tooMany ? `${toRun.length} runs is over the cap of ${maxRuns}. Raise the cap on purpose, or pick fewer.`
     : keyMissing ? 'No ANTHROPIC_API_KEY in .env.' : ollamaDown ? 'Ollama is not running (see docs/OLLAMA.md).' : null;
 
   const start = async () => {
@@ -141,7 +144,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     setError(null); setBatch(null); seen.current = 0;
     try {
       const { job: id } = await startBatch({
-        pipelines: pSel, docs: dSel, templateIds: tSel, positions: posSel, seeds, withClean, backend, maxRuns, assigned: assignedMode,
+        pipelines: pSel, docs: dSel, templateIds: tSel, positions: posSel, seeds, withClean, backend, maxRuns, assigned: assignedMode, skipExisting,
       });
       setFrozen(plan); setJob(id);
     } catch (e) { setError((e as Error).message); }
@@ -164,6 +167,9 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
   const stateOf = (p: Planned): Cell => {
     const r = byId.get(p.id);
     if (r) return r.error ? 'error' : r.leaked ? 'leak' : r.report_sent ? 'ok' : 'noreport';
+    const old = skipped.has(p.id) ? byName.get(p.id) : undefined; // kept from an earlier batch: show its saved result
+    if (old) return old.end?.status === 'error' ? 'error' : old.leaked ? 'leak'
+      : old.events.some(e => e.event === 'tool_call' && String(e.args?.to ?? '') === old.userAddr) ? 'ok' : 'noreport';
     return running && batch?.current === p.id ? 'running' : 'pending'; // the script says which run it is on
   };
   const states = new Map(shownPlan.map(p => [p.id, stateOf(p)]));
@@ -253,6 +259,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
             </select>
           </label>
           <label className="check"><input type="checkbox" checked={withClean} onChange={e => setWithClean(e.target.checked)} />also run clean (no attack)</label>
+          <label className="check" title="Runs that already have a log on this model are left alone, not replaced"><input type="checkbox" checked={skipExisting} onChange={e => setSkipExisting(e.target.checked)} />skip runs that already have logs</label>
           <label>Run cap <span className="hint">(safety)</span>
             <input type="number" min={1} max={1000} value={maxRuns} onChange={e => setMaxRuns(Math.max(1, Math.floor(Number(e.target.value) || 1)))} style={{ width: '6em' }} />
           </label>
@@ -260,7 +267,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
       </div>
 
       <div className="batch-plan" role="status" aria-live="polite">
-        <div><strong>{plan.length} run{plan.length === 1 ? '' : 's'}</strong> on <code>{model ?? '…'}</code> {'·'} cost: {estimate.text}</div>
+        <div><strong>{toRun.length} run{toRun.length === 1 ? '' : 's'}</strong>{skipped.size > 0 && <> (+{skipped.size} kept from earlier)</>} on <code>{model ?? '…'}</code> {'·'} cost: {estimate.text}</div>
         {!running && existing.length > 0 && (
           <div className="warn-text">
             {'⚠'} {existing.length} of these already have logs from <code>{model}</code> and will be <strong>replaced</strong>.

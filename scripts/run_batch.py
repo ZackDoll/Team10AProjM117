@@ -65,6 +65,8 @@ def main() -> None:
     ap.add_argument("--backend", choices=["stub", "anthropic", "ollama"])
     ap.add_argument("--model")
     ap.add_argument("--max-runs", type=int, default=20, help="safety cap on runs (default 20)")
+    ap.add_argument("--skip-existing", action="store_true",
+                    help="don't rerun runs that already have a log (on this model); keeps them instead of overwriting")
     ap.add_argument("--dry-run", action="store_true", help="list the runs without calling the model")
     ap.add_argument("--json", action="store_true", help="machine-readable output, one JSON object per line")
     a = ap.parse_args()
@@ -122,15 +124,25 @@ def main() -> None:
         plan += [(p, d, None, None, s) for p, d, s in itertools.product(a.pipelines, a.docs, a.seeds)]
     if not plan:
         die("nothing to run: pick at least one pipeline, document, template and position")
-    if len(plan) > a.max_runs:
-        die(f"{len(plan)} runs is more than --max-runs {a.max_runs}. Raise it on purpose if you mean it.")
 
     def rid(p, d, t, pos, s) -> str:
         return make_run_id(p, d.stem, t["id"] if t else None, pos, s, effective_model(cfg))
 
+    skipped = 0
+    if a.skip_existing:
+        kept = [r for r in plan if not (Path(cfg.log_dir) / "runs" / f"{rid(*r)}.jsonl").exists()]
+        skipped, plan = len(plan) - len(kept), kept
+        if not plan:
+            say({"event": "plan", "total": 0, "backend": cfg.backend, "model": cfg.model, "overwrites": [], "skipped": skipped},
+                f"nothing to do: all {skipped} runs already have logs on {cfg.model}")
+            return
+    if len(plan) > a.max_runs:
+        die(f"{len(plan)} runs is more than --max-runs {a.max_runs}. Raise it on purpose if you mean it.")
+
     existing = [rid(*r) for r in plan if (Path(cfg.log_dir) / "runs" / f"{rid(*r)}.jsonl").exists()]
-    say({"event": "plan", "total": len(plan), "backend": cfg.backend, "model": cfg.model, "overwrites": existing},
+    say({"event": "plan", "total": len(plan), "backend": cfg.backend, "model": cfg.model, "overwrites": existing, "skipped": skipped},
         f"{len(plan)} runs planned on {cfg.backend}/{cfg.model}"
+        + (f"; skipping {skipped} that already have logs" if skipped else "")
         + (f"; {len(existing)} already have logs and will be overwritten" if existing else ""))
 
     hits = done = 0
