@@ -79,7 +79,7 @@ def test_four_node_custom_pipeline_runs(stub_config, clean_doc):
              [e("user", "r1"), e("r1", "r2"), e("r2", "r3"), e("r3", "rep"), e("rep", "user")], "rep")
     ev = read_events(run(stub_config, spec=s, doc_id="d1", doc_text=clean_doc, seed=2))
     assert ev[-1]["status"] == "ok" and ev[0]["topology"] == "t1"
-    assert ev[0]["run_id"].startswith("t1__d1__clean")
+    assert ev[0]["run_id"].startswith("t1__d1__clean__na__s2__stub")
     routes = [(m["sender"], m["receiver"]) for m in ev if m["event"] == "message"]
     assert routes == [("user", "r1"), ("r1", "r2"), ("r2", "r3"), ("r3", "rep"), ("rep", "user")]
     sends = [m for m in ev if m["event"] == "tool_call"]

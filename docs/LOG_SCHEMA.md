@@ -2,14 +2,17 @@
 
 Each run writes `logs/runs/<run_id>.jsonl`, one JSON object per line, in order, and a readable
 transcript `logs/transcripts/<run_id>.md`.
-`run_id` = `{pipeline_id}__{doc_id}__{template_id|clean}__{position|na}__s{seed}`. Rerunning the same
-run overwrites its files, and the LLM cache makes the rerun free.
+`run_id` = `{pipeline_id}__{doc_id}__{template_id|clean}__{position|na}__s{seed}__{model}`, where `{model}` is the
+model name made file-safe (`qwen2.5:3b-instruct` becomes `qwen2.5-3b-instruct`; the stub backend is `stub`). Split on
+`__` and the first five fields are unchanged from earlier versions. Rerunning the same run on the same model
+overwrites its files, and the LLM cache makes the rerun free; another model gets its own.
 
 Sample logs (stub backend) live in `tests/fixtures/sample_{chain,orchestrator}_{clean,leak}.jsonl`,
 each with its transcript `.md` next to it. Regenerate them with `python scripts/make_fixtures.py`.
 
 **v2 changes** (v1 logs still load everywhere): `topology` is now any pipeline id, not only
-`chain` or `orchestrator`; `run_start` gained `pipeline`; transcripts were added.
+`chain` or `orchestrator`; `run_start` gained `pipeline`; transcripts were added; the model is part of the run
+id (`scripts/migrate_run_ids.py` renames older logs, keeping their canaries).
 
 ## Fields on every line
 | field | type | notes |

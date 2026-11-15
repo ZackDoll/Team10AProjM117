@@ -11,7 +11,7 @@ npm install        # first time only
 npm run dev        # then open http://localhost:5173
 ```
 Other scripts: `npm run build` (type-checks, then builds to `viz/dist/`), `npm run preview`,
-`npm test` (transcript parity with Python, and the word-diff unit checks). Needs Node 22.18+ for `npm test`
+`npm test` (transcript parity with Python, the word-diff unit checks, and the run-id model slug matching Python). Needs Node 22.18+ for `npm test`
 (it runs `.ts` files directly); Node 20+ is enough for everything else.
 
 ## The tabs
@@ -47,7 +47,7 @@ Pick pipelines, documents, templates, positions, seeds and a backend, and run th
 results grid fills in live: templates down, pipeline × position across, each cell one run coloured and
 labelled LEAK / safe / no report / error, with attack success in the margins. Click a finished cell to
 replay it. It shows the run count and a cost estimate first, caps the number of runs (default 100), warns
-when a batch would overwrite existing logs, and has a Stop button.
+when a batch would replace existing logs of the same model, and has a Stop button.
 
 ### Pipelines
 Build your own pipeline with forms: add agents, tool agents and hubs, edit each one's system prompt
@@ -69,8 +69,8 @@ It validates as you type with the same Python the runner uses, shows a live grap
 | `POST /api/batch`, `GET /api/batch/<job>`, `POST /api/batch/<job>/stop` | a batch |
 
 The API key is read by Python from `.env` and never reaches the browser. Only same-origin requests are
-accepted, so other websites can't start runs, and one run or batch happens at a time. Run ids don't include
-the model, so a rerun of the same combination replaces the earlier log; the Batch tab warns first.
+accepted, so other websites can't start runs, and one run or batch happens at a time. Run ids end with the
+model, so the same combination on two models gives two logs; the Batch tab warns before a rerun replaces one.
 
 ## Logs it shows
 - The sample logs in `tests/fixtures/` (stub backend, including one failed run) are always bundled.

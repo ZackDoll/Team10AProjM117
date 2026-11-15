@@ -115,9 +115,10 @@ pytest
 From Python, call `m117.pipeline.run(config, topology=..., doc_id=..., doc_text=..., seed=..., template_id=..., position=...)`.
 `topology` is any pipeline id. It returns the log path. See [docs/LOG_SCHEMA.md](docs/LOG_SCHEMA.md) for the log format.
 
-Run ids are `{pipeline}__{doc}__{template|clean}__{position|na}__s{seed}`. **They do not include the
-model**, so running the same combination on another model replaces the earlier log. Keep that in mind
-when comparing models (the viewer warns before overwriting).
+Run ids are `{pipeline}__{doc}__{template|clean}__{position|na}__s{seed}__{model}`, for example
+`chain__d1__direct_override__middle__s1__qwen2.5-3b-instruct`. The model is part of the id, so the same
+combination on two models gives two logs. Rerunning on the same model replaces its log (the Batch tab warns
+first). Logs from before this change can be renamed with `python scripts/migrate_run_ids.py`.
 
 ## The viewer
 A React app for running, building and replaying:

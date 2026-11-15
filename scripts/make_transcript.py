@@ -1,6 +1,6 @@
 """Build markdown transcripts for run logs that already exist.
 
-  python scripts/make_transcript.py logs/runs/chain__d1__clean__na__s1.jsonl
+  python scripts/make_transcript.py logs/runs/chain__d1__clean__na__s1__stub.jsonl
   python scripts/make_transcript.py logs/runs/*.jsonl          (all of them)
   python scripts/make_transcript.py --out docs/transcripts logs/runs/x.jsonl
 

@@ -40,7 +40,7 @@ try:
     run(cfg, topology="chain", doc_id="d1", doc_text=clean, seed=2, llm=FailsOnSecondCall(cfg))
 except RuntimeError:
     pass
-src = log_dir / "runs" / "chain__d1__clean__na__s2.jsonl"
+src = log_dir / "runs" / "chain__d1__clean__na__s2__stub.jsonl"
 events = read_events(src)
 for e in events:
     if e["event"] == "error":

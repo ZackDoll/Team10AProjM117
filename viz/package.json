@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:transcript": "node scripts/transcript-parity.mjs",
     "test:diff": "node scripts/diff-check.mjs",
-    "test": "npm run test:transcript && npm run test:diff"
+    "test": "npm run test:transcript && npm run test:diff && npm run test:slug",
+    "test:slug": "node scripts/slug-check.mjs"
   },
   "dependencies": {
     "react": "^19.3.1",

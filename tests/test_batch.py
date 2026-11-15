@@ -35,15 +35,15 @@ def test_batch_runs_the_matrix_and_scores_each_run(tmp_path):
     for k, e in enumerate(ev):
         if e["event"] == "run":
             assert ev[k - 1] == {"event": "start", "i": e["i"], "run_id": e["run_id"]}
-    assert (tmp_path / "logs" / "runs" / "chain__d1__stubtest__middle__s3.jsonl").is_file()
-    assert (tmp_path / "logs" / "transcripts" / "chain__d1__stubtest__middle__s3.md").is_file()
+    assert (tmp_path / "logs" / "runs" / "chain__d1__stubtest__middle__s3__stub.jsonl").is_file()
+    assert (tmp_path / "logs" / "transcripts" / "chain__d1__stubtest__middle__s3__stub.md").is_file()
 
 
 def test_a_second_batch_warns_about_the_logs_it_will_overwrite(tmp_path):
     args = ("--template-ids", "stubtest", "--pipelines", "chain", "--seeds", "1")
     batch(tmp_path, *args)
     _, ev = batch(tmp_path, *args)
-    assert ev[0]["overwrites"] == ["chain__d1__stubtest__middle__s1"]
+    assert ev[0]["overwrites"] == ["chain__d1__stubtest__middle__s1__stub"]
 
 
 def test_dry_run_writes_nothing(tmp_path):

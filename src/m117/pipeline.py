@@ -5,6 +5,7 @@ checker can group results. Clean runs leave both as None.
 """
 from __future__ import annotations
 
+import re
 import sys
 import traceback
 from pathlib import Path
@@ -18,9 +19,25 @@ from .spec import describe, load_spec, run_spec, validate
 from .transcript import write_transcript
 
 
+def model_slug(model: str) -> str:
+    """A model name made safe for a file name: 'qwen2.5:3b-instruct' -> 'qwen2.5-3b-instruct'.
+    viz/src/api.ts has the same function; the batch tab uses it to predict run ids."""
+    return re.sub(r"[^A-Za-z0-9.]+", "-", model).strip("-") or "unknown"
+
+
+def effective_model(config: Config) -> str:
+    """The model a run will actually use: the stub backend ignores config.model."""
+    return "stub" if config.backend == "stub" else config.model
+
+
 def make_run_id(topology: str, doc_id: str, template_id: str | None, position: str | None,
-                seed: int) -> str:
-    return f"{topology}__{doc_id}__{template_id or 'clean'}__{position or 'na'}__s{seed}"
+                seed: int, model: str) -> str:
+    """{pipeline}__{doc}__{template|clean}__{position|na}__s{seed}__{model}.
+
+    The model is part of the id so that running the same combination on two models gives two logs
+    instead of the second replacing the first. The first five fields are unchanged."""
+    return (f"{topology}__{doc_id}__{template_id or 'clean'}__{position or 'na'}__s{seed}"
+            f"__{model_slug(model)}")
 
 
 def run(config: Config, *, topology: str | None = None, doc_id: str, doc_text: str, seed: int,
@@ -39,7 +56,7 @@ def run(config: Config, *, topology: str | None = None, doc_id: str, doc_text: s
     meter = meter or CostMeter(config.budget_usd, config.prices_per_mtok)
     llm = llm or make_client(config, meter)
 
-    run_id = make_run_id(topology, doc_id, template_id, position, seed)
+    run_id = make_run_id(topology, doc_id, template_id, position, seed, llm.model)
     canary = make_canary(run_id)
     log_path = Path(config.log_dir) / "runs" / f"{run_id}.jsonl"
     logger = RunLogger(log_path, base={

@@ -15,9 +15,9 @@ def make(stub_config, doc, topology="chain", **kw):
 
 def test_run_writes_a_transcript_next_to_the_log(stub_config, clean_doc):
     p = make(stub_config, clean_doc)
-    t = p.parent.parent / "transcripts" / "chain__d1__clean__na__s1.md"
+    t = p.parent.parent / "transcripts" / "chain__d1__clean__na__s1__stub.md"
     assert t.is_file()
-    assert t.read_text(encoding="utf-8").startswith("# Run transcript: `chain__d1__clean__na__s1`")
+    assert t.read_text(encoding="utf-8").startswith("# Run transcript: `chain__d1__clean__na__s1__stub`")
 
 
 def test_chain_transcript_labels_every_step_and_the_final_output(stub_config, clean_doc):
@@ -86,7 +86,7 @@ class Boom(StubClient):
 def test_failed_runs_still_get_a_transcript(stub_config, clean_doc):
     with pytest.raises(RuntimeError):
         run(stub_config, topology="chain", doc_id="d1", doc_text=clean_doc, seed=1, llm=Boom(stub_config))
-    t = (stub_config.log_dir and __import__("pathlib").Path(stub_config.log_dir)) / "transcripts" / "chain__d1__clean__na__s1.md"
+    t = (stub_config.log_dir and __import__("pathlib").Path(stub_config.log_dir)) / "transcripts" / "chain__d1__clean__na__s1__stub.md"
     md = t.read_text(encoding="utf-8")
     assert "`error`" in md and "model fell over" in md and "No final output was produced" in md
 
@@ -103,4 +103,4 @@ def test_a_transcript_bug_never_fails_the_run(stub_config, clean_doc, monkeypatc
 def test_write_transcript_names_the_file_by_run_id(stub_config, clean_doc, tmp_path):
     p = make(stub_config, clean_doc)
     out = write_transcript(p, tmp_path / "elsewhere")
-    assert out == tmp_path / "elsewhere" / "chain__d1__clean__na__s1.md" and out.is_file()
+    assert out == tmp_path / "elsewhere" / "chain__d1__clean__na__s1__stub.md" and out.is_file()

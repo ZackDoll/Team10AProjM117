@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from m117.attacks import TemplateError, get_template, inject  # noqa: E402
 from m117.config import Config  # noqa: E402
 from m117.llm import CostMeter  # noqa: E402
-from m117.pipeline import make_run_id, run  # noqa: E402
+from m117.pipeline import effective_model, make_run_id, run  # noqa: E402
 from m117.spec import SpecError, load_spec, validate  # noqa: E402
 
 
@@ -86,7 +86,7 @@ def main() -> None:
 
     if a.json:
         # Tell the caller where the log will appear before the run starts, so it can follow it live.
-        run_id = make_run_id(a.topology, doc_id, a.template_id, a.position, a.seed)
+        run_id = make_run_id(a.topology, doc_id, a.template_id, a.position, a.seed, effective_model(cfg))
         log_path = Path(cfg.log_dir) / "runs" / f"{run_id}.jsonl"
         log_path.unlink(missing_ok=True)  # don't let the caller read a previous run's log
         transcript = Path(cfg.log_dir) / "transcripts" / f"{run_id}.md"

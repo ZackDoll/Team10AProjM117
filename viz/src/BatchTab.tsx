@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getBatch, getDocs, getStatus, getTemplates, startBatch, stopBatch } from './api';
+import { getBatch, getDocs, getStatus, getTemplates, modelSlug, startBatch, stopBatch } from './api';
 import type { BatchRow, BatchState, Status, Template } from './api';
 import type { PipelineSpec, Run } from './types';
 
@@ -81,24 +81,25 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     return xs.every(x => Number.isInteger(x) && x >= 0) ? [...new Set(xs)] : null;
   }, [seedText]);
 
-  // The runs this configuration would make, in the order the batch script makes them.
+  /** the model a run on this backend uses (the stub ignores the configured one) */
+  const model = backend === 'anthropic' ? status?.model : backend === 'ollama' ? status?.ollamaModel : 'stub';
+
+  // The runs this configuration would make, in the order the batch script makes them. Run ids end with the model.
   const plan: Planned[] = useMemo(() => {
     if (!seeds) return [];
     const out: Planned[] = [];
     const mk = (p: string, d: string, t: string | null, pos: string | null, s: number) =>
-      out.push({ id: `${p}__${docStem(d)}__${t ?? 'clean'}__${pos ?? 'na'}__s${s}`, pipeline: p, doc: d, template: t, position: pos, seed: s });
+      out.push({ id: `${p}__${docStem(d)}__${t ?? 'clean'}__${pos ?? 'na'}__s${s}__${modelSlug(model ?? '')}`, pipeline: p, doc: d, template: t, position: pos, seed: s });
     for (const p of pSel) for (const d of dSel) for (const t of tSel) for (const pos of POSITIONS.filter(x => posSel.includes(x))) for (const s of seeds) mk(p, d, t, pos, s);
     if (withClean) for (const p of pSel) for (const d of dSel) for (const s of seeds) mk(p, d, null, null, s);
     return out;
-  }, [pSel, dSel, tSel, posSel, seeds, withClean]);
+  }, [pSel, dSel, tSel, posSel, seeds, withClean, model]);
 
   const existing = useMemo(() => {
     const byName = new Map(runs.map(r => [r.name, r]));
     return plan.filter(p => byName.has(p.id)).map(p => byName.get(p.id)!);
   }, [plan, runs]);
-  const existingModels = [...new Set(existing.map(r => String(r.start.model ?? '?')))];
 
-  const model = backend === 'anthropic' ? status?.model : backend === 'ollama' ? status?.ollamaModel : 'stub';
   const estimate = useMemo(() => {
     if (backend !== 'anthropic') return { text: 'free', known: true };
     const costs = runs.filter(r => r.start.model === status?.model && typeof r.end?.cost_usd === 'number' && r.end.cost_usd > 0)
@@ -231,8 +232,8 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
         <div><strong>{plan.length} run{plan.length === 1 ? '' : 's'}</strong> on <code>{model ?? '…'}</code> {'·'} cost: {estimate.text}</div>
         {!running && existing.length > 0 && (
           <div className="warn-text">
-            {'⚠'} {existing.length} of these already have logs and will be <strong>overwritten</strong>
-            {' '}(made with {existingModels.join(', ')}). A rerun of the same pipeline, document, template, position and seed replaces the old log, whatever the model.
+            {'⚠'} {existing.length} of these already have logs from <code>{model}</code> and will be <strong>replaced</strong>.
+            Other models' logs of the same runs are kept: the model is part of the run id.
           </div>
         )}
         {invalid && <div className="error">{invalid}</div>}

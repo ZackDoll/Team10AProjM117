@@ -218,7 +218,7 @@ export function RunForm({ pipelines, requested, onLive, onStartBoth, onNote, onM
                 : 'Each Haiku run takes ~15-40 s and costs well under a cent. Same doc text + seed is answered from the cache for free.')}
           </span>
         </div>
-        <p className="hint small">Runs with the same pipeline, doc id, template, position and seed overwrite each other's log file.
+        <p className="hint small">Runs with the same pipeline, doc id, template, position, seed and model replace each other's log; a different model gets its own.
           The API key stays in the local server; the browser never sees it.</p>
       </div>
     </details>

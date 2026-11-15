@@ -25,6 +25,10 @@ export interface JobState {
   log: string; logName: string | null;
 }
 
+/** A model name made safe for a file name, as in a run id: qwen2.5:3b-instruct -> qwen2.5-3b-instruct.
+ *  Must match model_slug() in src/m117/pipeline.py (`npm run test:slug`). */
+export const modelSlug = (m: string) => m.replace(/[^A-Za-z0-9.]+/g, '-').replace(/^-+|-+$/g, '') || 'unknown';
+
 /** A document's run id: data/placeholder/d1.txt -> d1 */
 export const idFromName = (n: string) => n.replace(/\.txt$/, '').split('/').pop()!.replace(/[^A-Za-z0-9_.-]/g, '_');
 

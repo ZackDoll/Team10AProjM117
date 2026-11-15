@@ -28,8 +28,8 @@ python scripts/run_batch.py --docs data/placeholder/d1.txt --config config/local
 Or from the viewer (`cd viz && npm run dev`): choose **Local: qwen2.5:3b-instruct** as the backend in
 New run or in the Batch tab. If Ollama isn't running the option says so.
 
-Run ids don't include the model, so a batch on the local model replaces earlier logs of the same
-combination made with Claude (and vice versa). The Batch tab warns before it does.
+Run ids end with the model name, so a batch on the local model writes its own logs next to Claude's for
+the same combination, and the two can be compared.
 
 ## Notes
 - No API key, no `.env` entry, and no budget cap that matters -- `prices_per_mtok` has no entry

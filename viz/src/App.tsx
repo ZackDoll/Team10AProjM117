@@ -66,7 +66,7 @@ export default function App() {
     templates.find(t => t.id === r.start.template_id)?.marker ?? '', [templates]);
   const [diffOn, setDiffOn] = useState(false);
   /** the clean twin of the attacked run in panel A does not exist yet */
-  const [missingClean, setMissingClean] = useState<{ topology: string; docId: string; seed: number; model: string; replaces: string | null } | null>(null);
+  const [missingClean, setMissingClean] = useState<{ topology: string; docId: string; seed: number; model: string } | null>(null);
   const [cleanBusy, setCleanBusy] = useState<string | null>(null);
   const [pipelines, setPipelines] = useState<PipelineSpec[]>([]);
   const [pipelinesOk, setPipelinesOk] = useState(false); // false in a static build: there is no server
@@ -229,10 +229,7 @@ export default function App() {
     }
     const i = findClean(all, a);
     if (i < 0) {
-      // a clean run with the same id but another model would be overwritten by running it
-      const sameId = all.find(r => !r.start.template_id && r.topology === a.topology && r.start.doc_id === a.start.doc_id && r.start.seed === a.start.seed);
-      setMissingClean({ topology: a.topology, docId: String(a.start.doc_id), seed: Number(a.start.seed), model: String(a.start.model),
-        replaces: sameId ? String(sameId.start.model) : null });
+      setMissingClean({ topology: a.topology, docId: String(a.start.doc_id), seed: Number(a.start.seed), model: String(a.start.model) });
       setDiffOn(false);
       return;
     }
@@ -376,12 +373,7 @@ export default function App() {
           {missingClean.seed}, model <code>{missingClean.model}</code>, with no attack template.{' '}
           <button type="button" onClick={runClean} disabled={!!cleanBusy}>{cleanBusy ?? 'Run it now'}</button>
           {missingClean.model.startsWith('claude') && !cleanBusy && <span className="hint"> (one Claude run: well under a cent)</span>}
-          {missingClean.replaces && (
-            <div className="warn-text">
-              {'⚠'} A clean run with the same id already exists, made with <code>{missingClean.replaces}</code>. Run ids don't include
-              the model, so running this will replace that log.
-            </div>
-          )}
+
         </div>
       )}
       {diffPair && <DiffView attacked={diffPair.attacked} clean={diffPair.clean} marker={marker} />}

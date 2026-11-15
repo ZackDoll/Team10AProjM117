@@ -12,8 +12,8 @@ transcripts in logs/transcripts/, and show up in the viewer.
   --template-ids t1 t2   only these templates      --with-clean   also run each document unpoisoned
   --backend/--model/--config pick the model        --json         one JSON object per line (the viewer's batch tab)
 
-Runs with the same pipeline, document, template, position and seed share a log file, whatever the
-model, so a second batch on another model overwrites the first. Use --dry-run to see what would.
+The model is part of the run id, so a batch on another model writes its own logs. Rerunning the same
+combination on the same model replaces its log; --dry-run tells you which (see "overwrites").
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from m117.attacks import POSITIONS, TemplateError, inject, load_templates  # noqa: E402
 from m117.config import Config  # noqa: E402
 from m117.llm import BudgetExceeded, CostMeter  # noqa: E402
-from m117.pipeline import make_run_id, run  # noqa: E402
+from m117.pipeline import effective_model, make_run_id, run  # noqa: E402
 from m117.spec import SpecError, load_spec  # noqa: E402
 
 
@@ -103,7 +103,7 @@ def main() -> None:
         die(f"{len(plan)} runs is more than --max-runs {a.max_runs}. Raise it on purpose if you mean it.")
 
     def rid(p, d, t, pos, s) -> str:
-        return make_run_id(p, d.stem, t["id"] if t else None, pos, s)
+        return make_run_id(p, d.stem, t["id"] if t else None, pos, s, effective_model(cfg))
 
     existing = [rid(*r) for r in plan if (Path(cfg.log_dir) / "runs" / f"{rid(*r)}.jsonl").exists()]
     say({"event": "plan", "total": len(plan), "backend": cfg.backend, "model": cfg.model, "overwrites": existing},
