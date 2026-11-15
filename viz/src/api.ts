@@ -51,8 +51,14 @@ async function sendJson<T>(method: string, path: string, body?: unknown): Promis
   return data as T;
 }
 
+/** One document of data/docs: its length tier and the poison it is assigned in the experiment design. */
+export interface DocMeta { id: string; genre: string; tier: 'short' | 'medium' | 'long'; words: number; paragraphs: number; assigned_template: string; assigned_position: string }
+export const getManifest = () => getJson<DocMeta[]>('./api/manifest');
+
 export interface BatchRequest {
   pipelines: string[]; docs: string[]; templateIds: string[]; positions: string[]; seeds: number[];
+  /** run each document with its own assigned template and position (templateIds and positions are then ignored) */
+  assigned?: boolean;
   withClean: boolean; backend: 'anthropic' | 'stub' | 'ollama'; maxRuns: number;
 }
 export interface BatchRow {

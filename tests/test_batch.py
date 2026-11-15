@@ -60,3 +60,31 @@ def test_the_run_cap_and_bad_input_stop_the_batch_before_it_starts(tmp_path):
     code, ev = batch(tmp_path, "--pipelines", "mesh")
     assert code == 1 and "unknown pipeline" in ev[-1]["error"]
     assert not (tmp_path / "logs").exists()
+
+
+def test_assigned_mode_runs_each_document_with_its_own_poison(tmp_path):
+    manifest = {d["id"]: d for d in json.loads((ROOT / "data/docs/manifest.json").read_text(encoding="utf-8"))}
+    ids = ["d001_medium", "d002_long", "d006_short"]
+    docs = [str(ROOT / f"data/docs/{i}.txt") for i in ids]
+    cfg = tmp_path / "cfg.yaml"
+    cfg.write_text(f"backend: stub\nmodel: stub\nlog_dir: {(tmp_path / 'logs').as_posix()}\n"
+                   f"cache_dir: {(tmp_path / 'cache').as_posix()}\n", encoding="utf-8")
+    p = subprocess.run([sys.executable, str(SCRIPT), "--config", str(cfg), "--json", "--assigned", "--with-clean",
+                        "--pipelines", "chain", "--docs", *docs], capture_output=True, text=True, encoding="utf-8")
+    ev = [json.loads(l) for l in p.stdout.splitlines() if l.startswith("{")]
+    assert p.returncode == 0 and ev[0]["total"] == 6  # 3 poisoned + 3 clean, one pipeline, one seed
+    runs = [e for e in ev if e["event"] == "run"]
+    for r in runs[:3]:
+        m = manifest[r["doc"]]
+        assert (r["template"], r["position"]) == (m["assigned_template"], m["assigned_position"])
+        assert r["run_id"] == f"chain__{r['doc']}__{m['assigned_template']}__{m['assigned_position']}__s1__stub"
+    assert all(r["template"] is None for r in runs[3:])
+
+
+def test_assigned_mode_rejects_conflicting_flags_and_unassigned_documents(tmp_path):
+    base = [sys.executable, str(SCRIPT), "--json", "--assigned", "--dry-run"]
+    p = subprocess.run([*base, "--positions", "start", "--docs", str(ROOT / "data/docs/d001_medium.txt")],
+                       capture_output=True, text=True, encoding="utf-8")
+    assert p.returncode == 1 and "--assigned uses each document's own" in p.stdout
+    p = subprocess.run([*base, "--docs", str(ROOT / "data/placeholder/d1.txt")], capture_output=True, text=True, encoding="utf-8")
+    assert p.returncode == 1 and "no assigned poison" in p.stdout

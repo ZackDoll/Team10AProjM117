@@ -109,6 +109,9 @@ python scripts/run_one.py --topology chain --doc poisoned.txt --doc-id d03 --tem
 # a whole matrix: pipelines x documents x templates x positions x seeds, with a leak table
 python scripts/run_batch.py --docs data/placeholder/d1.txt --positions start middle end --dry-run
 
+# all 100 documents, each with its own assigned poison, on both pipelines
+python scripts/run_batch.py --assigned --docs data/docs/*.txt --max-runs 200 --dry-run
+
 pytest
 ```
 
@@ -145,7 +148,8 @@ See [viz/README.md](viz/README.md).
 - `src/m117/tools.py`: the mocked `send_message`. It only writes to the log.
 - `src/m117/llm.py`: stub, Anthropic and Ollama backends, the on-disk response cache and the budget meter.
 - `src/m117/transcript.py`: the markdown transcript. `src/m117/runlog.py`: the JSONL logger.
-- `data/attacks/templates.json`: payload templates (see its README). `data/placeholder/`: small test documents.
+- `data/docs/`: the 100 input documents with answer keys and an assigned poison for each (see its README).
+- `data/attacks/templates.json`: payload templates (see its README). `data/placeholder/`: two small smoke-test documents.
 - `viz/`: the React app and its dev-server API.
 
 ## Safety

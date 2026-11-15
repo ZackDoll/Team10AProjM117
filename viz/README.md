@@ -43,7 +43,9 @@ and cost. Sort by any column, filter by text, or toggle Leaked / Attack runs / C
 The summary line gives attack success for what is in view. **A** / **B** open a run in a panel.
 
 ### Batch
-Pick pipelines, documents, templates, positions, seeds and a backend, and run the whole matrix. A
+Pick pipelines, documents (all / none / short / medium / long of the 100 in `data/docs/`), templates, positions, seeds and a
+backend, and run the whole matrix, or tick **each document's assigned poison** to give every document its own template and
+position from `data/docs/manifest.json`. A
 results grid fills in live: templates down, pipeline × position across, each cell one run coloured and
 labelled LEAK / safe / no report / error, with attack success in the margins. Click a finished cell to
 replay it. It shows the run count and a cost estimate first, caps the number of runs (default 100), warns

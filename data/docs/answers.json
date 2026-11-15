@@ -1,0 +1,1802 @@
+{
+ "d001_medium": [
+  [
+   "Clearshore Software",
+   "Clearshore"
+  ],
+  [
+   "August 18, 2027",
+   "August 18"
+  ],
+  [
+   "$20 million",
+   "20 million"
+  ],
+  [
+   "Wilmington",
+   "Wilmington, Delaware"
+  ]
+ ],
+ "d002_long": [
+  [
+   "Ironfield Water",
+   "Ironfield"
+  ],
+  [
+   "December 13, 2026",
+   "December 13"
+  ],
+  [
+   "$618,000",
+   "618,000"
+  ],
+  [
+   "Richmond",
+   "Richmond, Virginia"
+  ]
+ ],
+ "d003_long": [
+  [
+   "Westwood Software",
+   "Westwood"
+  ],
+  [
+   "April 15, 2026",
+   "April 15"
+  ],
+  [
+   "$708,000",
+   "708,000"
+  ],
+  [
+   "Lubbock",
+   "Lubbock, Texas"
+  ]
+ ],
+ "d004_long": [
+  [
+   "Bluewood Air",
+   "Bluewood"
+  ],
+  [
+   "April 7, 2026",
+   "April 7"
+  ],
+  [
+   "$567",
+   "567"
+  ],
+  [
+   "Columbus",
+   "Columbus, Ohio"
+  ]
+ ],
+ "d005_medium": [
+  [
+   "Maplepeak Library",
+   "Maplepeak"
+  ],
+  [
+   "July 5, 2026",
+   "July 5"
+  ],
+  [
+   "$253,000",
+   "253,000"
+  ],
+  [
+   "Columbus",
+   "Columbus, Ohio"
+  ]
+ ],
+ "d006_short": [
+  [
+   "Coppercrest Health",
+   "Coppercrest"
+  ],
+  [
+   "December 14, 2026",
+   "December 14"
+  ],
+  [
+   "$69 million",
+   "69 million"
+  ],
+  [
+   "Kalamazoo",
+   "Kalamazoo, Michigan"
+  ]
+ ],
+ "d007_short": [
+  [
+   "Pinebridge Coffee",
+   "Pinebridge"
+  ],
+  [
+   "January 19, 2027",
+   "January 19"
+  ],
+  [
+   "$77 million",
+   "77 million"
+  ],
+  [
+   "Lubbock",
+   "Lubbock, Texas"
+  ]
+ ],
+ "d008_short": [
+  [
+   "Westbridge Solar",
+   "Westbridge"
+  ],
+  [
+   "September 9, 2026",
+   "September 9"
+  ],
+  [
+   "$862,000",
+   "862,000"
+  ],
+  [
+   "Duluth",
+   "Duluth, Minnesota"
+  ]
+ ],
+ "d009_medium": [
+  [
+   "Riverwater Air",
+   "Riverwater"
+  ],
+  [
+   "June 15, 2027",
+   "June 15"
+  ],
+  [
+   "$197,000",
+   "197,000"
+  ],
+  [
+   "Providence",
+   "Providence, Rhode Island"
+  ]
+ ],
+ "d010_short": [
+  [
+   "Greenhaven Freight",
+   "Greenhaven"
+  ],
+  [
+   "September 4, 2027",
+   "September 4"
+  ],
+  [
+   "$158,000",
+   "158,000"
+  ],
+  [
+   "Anchorage",
+   "Anchorage, Alaska"
+  ]
+ ],
+ "d011_medium": [
+  [
+   "Lakebend Labs",
+   "Lakebend"
+  ],
+  [
+   "February 23, 2026",
+   "February 23"
+  ],
+  [
+   "$404.99",
+   "404.99"
+  ],
+  [
+   "Billings",
+   "Billings, Montana"
+  ]
+ ],
+ "d012_short": [
+  [
+   "Westhaven Cycles",
+   "Westhaven"
+  ],
+  [
+   "May 15, 2026",
+   "May 15"
+  ],
+  [
+   "$353",
+   "353"
+  ],
+  [
+   "Boise",
+   "Boise, Idaho"
+  ]
+ ],
+ "d013_long": [
+  [
+   "Windview Coffee",
+   "Windview"
+  ],
+  [
+   "February 5, 2026",
+   "February 5"
+  ],
+  [
+   "$150,000",
+   "150,000"
+  ],
+  [
+   "Little Rock",
+   "Little Rock, Arkansas"
+  ]
+ ],
+ "d014_medium": [
+  [
+   "Stonewood Software",
+   "Stonewood"
+  ],
+  [
+   "February 27, 2026",
+   "February 27"
+  ],
+  [
+   "$838,000",
+   "838,000"
+  ],
+  [
+   "Duluth",
+   "Duluth, Minnesota"
+  ]
+ ],
+ "d015_medium": [
+  [
+   "Bluegate Health",
+   "Bluegate"
+  ],
+  [
+   "May 11, 2027",
+   "May 11"
+  ],
+  [
+   "$293.99",
+   "293.99"
+  ],
+  [
+   "Akron",
+   "Akron, Ohio"
+  ]
+ ],
+ "d016_short": [
+  [
+   "Windgate Labs",
+   "Windgate"
+  ],
+  [
+   "February 3, 2026",
+   "February 3"
+  ],
+  [
+   "$675,000",
+   "675,000"
+  ],
+  [
+   "Tulsa",
+   "Tulsa, Oklahoma"
+  ]
+ ],
+ "d017_medium": [
+  [
+   "Windfield Water",
+   "Windfield"
+  ],
+  [
+   "December 18, 2026",
+   "December 18"
+  ],
+  [
+   "$867,000",
+   "867,000"
+  ],
+  [
+   "Dayton",
+   "Dayton, Ohio"
+  ]
+ ],
+ "d018_long": [
+  [
+   "Goldpeak Labs",
+   "Goldpeak"
+  ],
+  [
+   "May 26, 2027",
+   "May 26"
+  ],
+  [
+   "$148.50",
+   "148.50"
+  ],
+  [
+   "Fresno",
+   "Fresno, California"
+  ]
+ ],
+ "d019_medium": [
+  [
+   "Westwater Credit Union",
+   "Westwater"
+  ],
+  [
+   "March 28, 2027",
+   "March 28"
+  ],
+  [
+   "$27",
+   "27"
+  ],
+  [
+   "Albany",
+   "Albany, New York"
+  ]
+ ],
+ "d020_long": [
+  [
+   "Westvale Library",
+   "Westvale"
+  ],
+  [
+   "October 5, 2027",
+   "October 5"
+  ],
+  [
+   "$380,000",
+   "380,000"
+  ],
+  [
+   "Eugene",
+   "Eugene, Oregon"
+  ]
+ ],
+ "d021_medium": [
+  [
+   "Silvervale Credit Union",
+   "Silvervale"
+  ],
+  [
+   "April 18, 2027",
+   "April 18"
+  ],
+  [
+   "$2.5 million",
+   "2.5 million"
+  ],
+  [
+   "Rapid City",
+   "Rapid City, South Dakota"
+  ]
+ ],
+ "d022_short": [
+  [
+   "Mapleshore Labs",
+   "Mapleshore"
+  ],
+  [
+   "June 5, 2026",
+   "June 5"
+  ],
+  [
+   "$393.25",
+   "393.25"
+  ],
+  [
+   "Billings",
+   "Billings, Montana"
+  ]
+ ],
+ "d023_medium": [
+  [
+   "Lakewater Credit Union",
+   "Lakewater"
+  ],
+  [
+   "June 25, 2026",
+   "June 25"
+  ],
+  [
+   "$55 million",
+   "55 million"
+  ],
+  [
+   "Santa Fe",
+   "Santa Fe, New Mexico"
+  ]
+ ],
+ "d024_medium": [
+  [
+   "Bluevale Cycles",
+   "Bluevale"
+  ],
+  [
+   "March 1, 2026",
+   "March 1"
+  ],
+  [
+   "$89 million",
+   "89 million"
+  ],
+  [
+   "Austin",
+   "Austin, Texas"
+  ]
+ ],
+ "d025_medium": [
+  [
+   "Riverview Health",
+   "Riverview"
+  ],
+  [
+   "April 10, 2026",
+   "April 10"
+  ],
+  [
+   "$683,000",
+   "683,000"
+  ],
+  [
+   "Rapid City",
+   "Rapid City, South Dakota"
+  ]
+ ],
+ "d026_long": [
+  [
+   "Maplevale Market",
+   "Maplevale"
+  ],
+  [
+   "April 13, 2026",
+   "April 13"
+  ],
+  [
+   "$48",
+   "48"
+  ],
+  [
+   "Knoxville",
+   "Knoxville, Tennessee"
+  ]
+ ],
+ "d027_medium": [
+  [
+   "Meadowgate Coffee",
+   "Meadowgate"
+  ],
+  [
+   "March 7, 2026",
+   "March 7"
+  ],
+  [
+   "$651,000",
+   "651,000"
+  ],
+  [
+   "Santa Fe",
+   "Santa Fe, New Mexico"
+  ]
+ ],
+ "d028_long": [
+  [
+   "Lakeford Water",
+   "Lakeford"
+  ],
+  [
+   "May 16, 2026",
+   "May 16"
+  ],
+  [
+   "$3.4 million",
+   "3.4 million"
+  ],
+  [
+   "Portland",
+   "Portland, Oregon"
+  ]
+ ],
+ "d029_medium": [
+  [
+   "Foxwater Freight",
+   "Foxwater"
+  ],
+  [
+   "October 17, 2026",
+   "October 17"
+  ],
+  [
+   "$330",
+   "330"
+  ],
+  [
+   "Santa Fe",
+   "Santa Fe, New Mexico"
+  ]
+ ],
+ "d030_long": [
+  [
+   "Clearwood Market",
+   "Clearwood"
+  ],
+  [
+   "April 8, 2027",
+   "April 8"
+  ],
+  [
+   "$67 million",
+   "67 million"
+  ],
+  [
+   "Rapid City",
+   "Rapid City, South Dakota"
+  ]
+ ],
+ "d031_short": [
+  [
+   "Clearpeak Water",
+   "Clearpeak"
+  ],
+  [
+   "August 17, 2027",
+   "August 17"
+  ],
+  [
+   "$132,000",
+   "132,000"
+  ],
+  [
+   "Billings",
+   "Billings, Montana"
+  ]
+ ],
+ "d032_short": [
+  [
+   "Stonestone Health",
+   "Stonestone"
+  ],
+  [
+   "July 9, 2027",
+   "July 9"
+  ],
+  [
+   "$24",
+   "24"
+  ],
+  [
+   "Rapid City",
+   "Rapid City, South Dakota"
+  ]
+ ],
+ "d033_medium": [
+  [
+   "Stonebridge Health",
+   "Stonebridge"
+  ],
+  [
+   "October 14, 2026",
+   "October 14"
+  ],
+  [
+   "$629,000",
+   "629,000"
+  ],
+  [
+   "Fargo",
+   "Fargo, North Dakota"
+  ]
+ ],
+ "d034_medium": [
+  [
+   "Cleargate Cycles",
+   "Cleargate"
+  ],
+  [
+   "June 21, 2027",
+   "June 21"
+  ],
+  [
+   "$375.50",
+   "375.50"
+  ],
+  [
+   "Bismarck",
+   "Bismarck, North Dakota"
+  ]
+ ],
+ "d035_medium": [
+  [
+   "Harborford Labs",
+   "Harborford"
+  ],
+  [
+   "June 25, 2026",
+   "June 25"
+  ],
+  [
+   "$450,000",
+   "450,000"
+  ],
+  [
+   "Reno",
+   "Reno, Nevada"
+  ]
+ ],
+ "d036_medium": [
+  [
+   "Copperford Library",
+   "Copperford"
+  ],
+  [
+   "July 1, 2027",
+   "July 1"
+  ],
+  [
+   "$92",
+   "92"
+  ],
+  [
+   "Omaha",
+   "Omaha, Nebraska"
+  ]
+ ],
+ "d037_long": [
+  [
+   "Meadowridge Market",
+   "Meadowridge"
+  ],
+  [
+   "June 11, 2026",
+   "June 11"
+  ],
+  [
+   "$59 million",
+   "59 million"
+  ],
+  [
+   "Akron",
+   "Akron, Ohio"
+  ]
+ ],
+ "d038_medium": [
+  [
+   "Bluefield Software",
+   "Bluefield"
+  ],
+  [
+   "December 14, 2027",
+   "December 14"
+  ],
+  [
+   "$3.4 million",
+   "3.4 million"
+  ],
+  [
+   "Tulsa",
+   "Tulsa, Oklahoma"
+  ]
+ ],
+ "d039_medium": [
+  [
+   "Highwood Water",
+   "Highwood"
+  ],
+  [
+   "February 12, 2026",
+   "February 12"
+  ],
+  [
+   "$57 million",
+   "57 million"
+  ],
+  [
+   "Knoxville",
+   "Knoxville, Tennessee"
+  ]
+ ],
+ "d040_short": [
+  [
+   "Harborfield Coffee",
+   "Harborfield"
+  ],
+  [
+   "October 23, 2026",
+   "October 23"
+  ],
+  [
+   "$3.6 million",
+   "3.6 million"
+  ],
+  [
+   "Billings",
+   "Billings, Montana"
+  ]
+ ],
+ "d041_long": [
+  [
+   "Sunbend Cycles",
+   "Sunbend"
+  ],
+  [
+   "February 9, 2026",
+   "February 9"
+  ],
+  [
+   "$503,000",
+   "503,000"
+  ],
+  [
+   "Bismarck",
+   "Bismarck, North Dakota"
+  ]
+ ],
+ "d042_long": [
+  [
+   "Clearvale Coffee",
+   "Clearvale"
+  ],
+  [
+   "June 2, 2027",
+   "June 2"
+  ],
+  [
+   "$226,000",
+   "226,000"
+  ],
+  [
+   "Eugene",
+   "Eugene, Oregon"
+  ]
+ ],
+ "d043_short": [
+  [
+   "Pinebrook Credit Union",
+   "Pinebrook"
+  ],
+  [
+   "January 26, 2026",
+   "January 26"
+  ],
+  [
+   "$2.0 billion",
+   "2.0 billion"
+  ],
+  [
+   "Charleston",
+   "Charleston, South Carolina"
+  ]
+ ],
+ "d044_long": [
+  [
+   "Windstone Solar",
+   "Windstone"
+  ],
+  [
+   "November 27, 2026",
+   "November 27"
+  ],
+  [
+   "$748.95",
+   "748.95"
+  ],
+  [
+   "Columbus",
+   "Columbus, Ohio"
+  ]
+ ],
+ "d045_long": [
+  [
+   "Oakhaven Market",
+   "Oakhaven"
+  ],
+  [
+   "April 9, 2026",
+   "April 9"
+  ],
+  [
+   "$534,000",
+   "534,000"
+  ],
+  [
+   "Little Rock",
+   "Little Rock, Arkansas"
+  ]
+ ],
+ "d046_medium": [
+  [
+   "Lakeridge Software",
+   "Lakeridge"
+  ],
+  [
+   "December 15, 2027",
+   "December 15"
+  ],
+  [
+   "$31 million",
+   "31 million"
+  ],
+  [
+   "Billings",
+   "Billings, Montana"
+  ]
+ ],
+ "d047_short": [
+  [
+   "Lakecrest Health",
+   "Lakecrest"
+  ],
+  [
+   "June 22, 2027",
+   "June 22"
+  ],
+  [
+   "$1.4 billion",
+   "1.4 billion"
+  ],
+  [
+   "Boise",
+   "Boise, Idaho"
+  ]
+ ],
+ "d048_short": [
+  [
+   "Highbridge Cycles",
+   "Highbridge"
+  ],
+  [
+   "August 28, 2026",
+   "August 28"
+  ],
+  [
+   "$556,000",
+   "556,000"
+  ],
+  [
+   "Raleigh",
+   "Raleigh, North Carolina"
+  ]
+ ],
+ "d049_long": [
+  [
+   "Redview Freight",
+   "Redview"
+  ],
+  [
+   "April 5, 2027",
+   "April 5"
+  ],
+  [
+   "$376.25",
+   "376.25"
+  ],
+  [
+   "Kalamazoo",
+   "Kalamazoo, Michigan"
+  ]
+ ],
+ "d050_long": [
+  [
+   "Redcrest Software",
+   "Redcrest"
+  ],
+  [
+   "July 13, 2027",
+   "July 13"
+  ],
+  [
+   "$847,000",
+   "847,000"
+  ],
+  [
+   "Lexington",
+   "Lexington, Kentucky"
+  ]
+ ],
+ "d051_medium": [
+  [
+   "Maplebrook Solar",
+   "Maplebrook"
+  ],
+  [
+   "April 24, 2026",
+   "April 24"
+  ],
+  [
+   "$894,000",
+   "894,000"
+  ],
+  [
+   "Salt Lake City",
+   "Salt Lake City, Utah"
+  ]
+ ],
+ "d052_long": [
+  [
+   "Redbrook Software",
+   "Redbrook"
+  ],
+  [
+   "March 19, 2026",
+   "March 19"
+  ],
+  [
+   "$63",
+   "63"
+  ],
+  [
+   "Denver",
+   "Denver, Colorado"
+  ]
+ ],
+ "d053_long": [
+  [
+   "Copperbridge Water",
+   "Copperbridge"
+  ],
+  [
+   "September 16, 2026",
+   "September 16"
+  ],
+  [
+   "$1.4 million",
+   "1.4 million"
+  ],
+  [
+   "Lexington",
+   "Lexington, Kentucky"
+  ]
+ ],
+ "d054_long": [
+  [
+   "Riverbridge Market",
+   "Riverbridge"
+  ],
+  [
+   "August 18, 2026",
+   "August 18"
+  ],
+  [
+   "$41 million",
+   "41 million"
+  ],
+  [
+   "Des Moines",
+   "Des Moines, Iowa"
+  ]
+ ],
+ "d055_short": [
+  [
+   "Sunbrook Water",
+   "Sunbrook"
+  ],
+  [
+   "December 1, 2026",
+   "December 1"
+  ],
+  [
+   "$763,000",
+   "763,000"
+  ],
+  [
+   "Des Moines",
+   "Des Moines, Iowa"
+  ]
+ ],
+ "d056_short": [
+  [
+   "Foxbend Water",
+   "Foxbend"
+  ],
+  [
+   "June 26, 2026",
+   "June 26"
+  ],
+  [
+   "$624.95",
+   "624.95"
+  ],
+  [
+   "Lubbock",
+   "Lubbock, Texas"
+  ]
+ ],
+ "d057_short": [
+  [
+   "Highshore Credit Union",
+   "Highshore"
+  ],
+  [
+   "February 28, 2027",
+   "February 28"
+  ],
+  [
+   "$811,000",
+   "811,000"
+  ],
+  [
+   "Mobile",
+   "Mobile, Alabama"
+  ]
+ ],
+ "d058_long": [
+  [
+   "Copperbrook Health",
+   "Copperbrook"
+  ],
+  [
+   "July 14, 2026",
+   "July 14"
+  ],
+  [
+   "$53 million",
+   "53 million"
+  ],
+  [
+   "Pittsburgh",
+   "Pittsburgh, Pennsylvania"
+  ]
+ ],
+ "d059_medium": [
+  [
+   "Cedarcrest Credit Union",
+   "Cedarcrest"
+  ],
+  [
+   "November 6, 2027",
+   "November 6"
+  ],
+  [
+   "$888,000",
+   "888,000"
+  ],
+  [
+   "Boise",
+   "Boise, Idaho"
+  ]
+ ],
+ "d060_short": [
+  [
+   "Oakview Freight",
+   "Oakview"
+  ],
+  [
+   "April 12, 2026",
+   "April 12"
+  ],
+  [
+   "$339.25",
+   "339.25"
+  ],
+  [
+   "Richmond",
+   "Richmond, Virginia"
+  ]
+ ],
+ "d061_medium": [
+  [
+   "Harborbrook Solar",
+   "Harborbrook"
+  ],
+  [
+   "February 5, 2026",
+   "February 5"
+  ],
+  [
+   "$312",
+   "312"
+  ],
+  [
+   "Providence",
+   "Providence, Rhode Island"
+  ]
+ ],
+ "d062_medium": [
+  [
+   "Sunshore Health",
+   "Sunshore"
+  ],
+  [
+   "January 28, 2026",
+   "January 28"
+  ],
+  [
+   "$477,000",
+   "477,000"
+  ],
+  [
+   "Peoria",
+   "Peoria, Illinois"
+  ]
+ ],
+ "d063_short": [
+  [
+   "Harborridge Freight",
+   "Harborridge"
+  ],
+  [
+   "October 21, 2027",
+   "October 21"
+  ],
+  [
+   "$796,000",
+   "796,000"
+  ],
+  [
+   "Duluth",
+   "Duluth, Minnesota"
+  ]
+ ],
+ "d064_medium": [
+  [
+   "Redford Coffee",
+   "Redford"
+  ],
+  [
+   "March 17, 2026",
+   "March 17"
+  ],
+  [
+   "$201.50",
+   "201.50"
+  ],
+  [
+   "Santa Fe",
+   "Santa Fe, New Mexico"
+  ]
+ ],
+ "d065_short": [
+  [
+   "Foxford Software",
+   "Foxford"
+  ],
+  [
+   "June 1, 2027",
+   "June 1"
+  ],
+  [
+   "$39",
+   "39"
+  ],
+  [
+   "Columbus",
+   "Columbus, Ohio"
+  ]
+ ],
+ "d066_short": [
+  [
+   "Ironwater Software",
+   "Ironwater"
+  ],
+  [
+   "October 28, 2026",
+   "October 28"
+  ],
+  [
+   "$1.4 million",
+   "1.4 million"
+  ],
+  [
+   "Burlington",
+   "Burlington, Vermont"
+  ]
+ ],
+ "d067_long": [
+  [
+   "Cedarridge Water",
+   "Cedarridge"
+  ],
+  [
+   "December 15, 2026",
+   "December 15"
+  ],
+  [
+   "$637,000",
+   "637,000"
+  ],
+  [
+   "Asheville",
+   "Asheville, North Carolina"
+  ]
+ ],
+ "d068_medium": [
+  [
+   "Pinebend Credit Union",
+   "Pinebend"
+  ],
+  [
+   "November 24, 2026",
+   "November 24"
+  ],
+  [
+   "$866,000",
+   "866,000"
+  ],
+  [
+   "Lexington",
+   "Lexington, Kentucky"
+  ]
+ ],
+ "d069_medium": [
+  [
+   "Copperridge Air",
+   "Copperridge"
+  ],
+  [
+   "June 20, 2026",
+   "June 20"
+  ],
+  [
+   "$43",
+   "43"
+  ],
+  [
+   "Syracuse",
+   "Syracuse, New York"
+  ]
+ ],
+ "d070_short": [
+  [
+   "Silvergate Coffee",
+   "Silvergate"
+  ],
+  [
+   "February 6, 2026",
+   "February 6"
+  ],
+  [
+   "$39 million",
+   "39 million"
+  ],
+  [
+   "Fresno",
+   "Fresno, California"
+  ]
+ ],
+ "d071_long": [
+  [
+   "Redfield Solar",
+   "Redfield"
+  ],
+  [
+   "March 18, 2026",
+   "March 18"
+  ],
+  [
+   "$88,000",
+   "88,000"
+  ],
+  [
+   "Billings",
+   "Billings, Montana"
+  ]
+ ],
+ "d072_long": [
+  [
+   "Frostwood Coffee",
+   "Frostwood"
+  ],
+  [
+   "March 3, 2026",
+   "March 3"
+  ],
+  [
+   "$547.99",
+   "547.99"
+  ],
+  [
+   "Tucson",
+   "Tucson, Arizona"
+  ]
+ ],
+ "d073_long": [
+  [
+   "Lakeview Software",
+   "Lakeview"
+  ],
+  [
+   "August 7, 2026",
+   "August 7"
+  ],
+  [
+   "$88,000",
+   "88,000"
+  ],
+  [
+   "Tacoma",
+   "Tacoma, Washington"
+  ]
+ ],
+ "d074_short": [
+  [
+   "Windbend Library",
+   "Windbend"
+  ],
+  [
+   "September 10, 2026",
+   "September 10"
+  ],
+  [
+   "$38 million",
+   "38 million"
+  ],
+  [
+   "Anchorage",
+   "Anchorage, Alaska"
+  ]
+ ],
+ "d075_medium": [
+  [
+   "Oakpeak Credit Union",
+   "Oakpeak"
+  ],
+  [
+   "January 14, 2026",
+   "January 14"
+  ],
+  [
+   "$5.3 million",
+   "5.3 million"
+  ],
+  [
+   "Charleston",
+   "Charleston, South Carolina"
+  ]
+ ],
+ "d076_medium": [
+  [
+   "Clearbend Credit Union",
+   "Clearbend"
+  ],
+  [
+   "October 13, 2026",
+   "October 13"
+  ],
+  [
+   "$3.2 billion",
+   "3.2 billion"
+  ],
+  [
+   "Knoxville",
+   "Knoxville, Tennessee"
+  ]
+ ],
+ "d077_medium": [
+  [
+   "Pineridge Air",
+   "Pineridge"
+  ],
+  [
+   "February 5, 2026",
+   "February 5"
+  ],
+  [
+   "$11 million",
+   "11 million"
+  ],
+  [
+   "Peoria",
+   "Peoria, Illinois"
+  ]
+ ],
+ "d078_long": [
+  [
+   "Brightford Software",
+   "Brightford"
+  ],
+  [
+   "April 28, 2026",
+   "April 28"
+  ],
+  [
+   "$426.50",
+   "426.50"
+  ],
+  [
+   "Spokane",
+   "Spokane, Washington"
+  ]
+ ],
+ "d079_long": [
+  [
+   "Goldvale Market",
+   "Goldvale"
+  ],
+  [
+   "May 16, 2026",
+   "May 16"
+  ],
+  [
+   "$876,000",
+   "876,000"
+  ],
+  [
+   "Wichita",
+   "Wichita, Kansas"
+  ]
+ ],
+ "d080_short": [
+  [
+   "Pineview Coffee",
+   "Pineview"
+  ],
+  [
+   "March 26, 2026",
+   "March 26"
+  ],
+  [
+   "$686,000",
+   "686,000"
+  ],
+  [
+   "Little Rock",
+   "Little Rock, Arkansas"
+  ]
+ ],
+ "d081_medium": [
+  [
+   "Coppershore Cycles",
+   "Coppershore"
+  ],
+  [
+   "July 14, 2026",
+   "July 14"
+  ],
+  [
+   "$46,000",
+   "46,000"
+  ],
+  [
+   "Tucson",
+   "Tucson, Arizona"
+  ]
+ ],
+ "d082_medium": [
+  [
+   "Highgate Library",
+   "Highgate"
+  ],
+  [
+   "September 15, 2027",
+   "September 15"
+  ],
+  [
+   "$626,000",
+   "626,000"
+  ],
+  [
+   "Pittsburgh",
+   "Pittsburgh, Pennsylvania"
+  ]
+ ],
+ "d083_short": [
+  [
+   "Silverford Water",
+   "Silverford"
+  ],
+  [
+   "February 24, 2026",
+   "February 24"
+  ],
+  [
+   "$879,000",
+   "879,000"
+  ],
+  [
+   "Omaha",
+   "Omaha, Nebraska"
+  ]
+ ],
+ "d084_short": [
+  [
+   "Ironstone Library",
+   "Ironstone"
+  ],
+  [
+   "July 10, 2026",
+   "July 10"
+  ],
+  [
+   "$37",
+   "37"
+  ],
+  [
+   "Spokane",
+   "Spokane, Washington"
+  ]
+ ],
+ "d085_long": [
+  [
+   "Sunvale Credit Union",
+   "Sunvale"
+  ],
+  [
+   "March 5, 2026",
+   "March 5"
+  ],
+  [
+   "$69",
+   "69"
+  ],
+  [
+   "Reno",
+   "Reno, Nevada"
+  ]
+ ],
+ "d086_medium": [
+  [
+   "Highhaven Cycles",
+   "Highhaven"
+  ],
+  [
+   "March 26, 2027",
+   "March 26"
+  ],
+  [
+   "$190",
+   "190"
+  ],
+  [
+   "Richmond",
+   "Richmond, Virginia"
+  ]
+ ],
+ "d087_medium": [
+  [
+   "Stoneridge Library",
+   "Stoneridge"
+  ],
+  [
+   "April 25, 2026",
+   "April 25"
+  ],
+  [
+   "$219,000",
+   "219,000"
+  ],
+  [
+   "Anchorage",
+   "Anchorage, Alaska"
+  ]
+ ],
+ "d088_medium": [
+  [
+   "Goldcrest Cycles",
+   "Goldcrest"
+  ],
+  [
+   "April 12, 2026",
+   "April 12"
+  ],
+  [
+   "$255.75",
+   "255.75"
+  ],
+  [
+   "Asheville",
+   "Asheville, North Carolina"
+  ]
+ ],
+ "d089_long": [
+  [
+   "Maplehaven Freight",
+   "Maplehaven"
+  ],
+  [
+   "February 28, 2026",
+   "February 28"
+  ],
+  [
+   "$3.2 million",
+   "3.2 million"
+  ],
+  [
+   "Fargo",
+   "Fargo, North Dakota"
+  ]
+ ],
+ "d090_medium": [
+  [
+   "Highbend Labs",
+   "Highbend"
+  ],
+  [
+   "February 5, 2026",
+   "February 5"
+  ],
+  [
+   "$132,000",
+   "132,000"
+  ],
+  [
+   "Wichita",
+   "Wichita, Kansas"
+  ]
+ ],
+ "d091_short": [
+  [
+   "Highfield Water",
+   "Highfield"
+  ],
+  [
+   "January 11, 2027",
+   "January 11"
+  ],
+  [
+   "$659,000",
+   "659,000"
+  ],
+  [
+   "Wichita",
+   "Wichita, Kansas"
+  ]
+ ],
+ "d092_long": [
+  [
+   "Bluepeak Air",
+   "Bluepeak"
+  ],
+  [
+   "January 22, 2026",
+   "January 22"
+  ],
+  [
+   "$25 million",
+   "25 million"
+  ],
+  [
+   "Portland",
+   "Portland, Maine"
+  ]
+ ],
+ "d093_medium": [
+  [
+   "Windridge Health",
+   "Windridge"
+  ],
+  [
+   "November 18, 2026",
+   "November 18"
+  ],
+  [
+   "$49",
+   "49"
+  ],
+  [
+   "Asheville",
+   "Asheville, North Carolina"
+  ]
+ ],
+ "d094_long": [
+  [
+   "Frostgate Solar",
+   "Frostgate"
+  ],
+  [
+   "June 3, 2026",
+   "June 3"
+  ],
+  [
+   "$76 million",
+   "76 million"
+  ],
+  [
+   "Fargo",
+   "Fargo, North Dakota"
+  ]
+ ],
+ "d095_short": [
+  [
+   "Copperbend Health",
+   "Copperbend"
+  ],
+  [
+   "August 18, 2026",
+   "August 18"
+  ],
+  [
+   "$190.75",
+   "190.75"
+  ],
+  [
+   "Tacoma",
+   "Tacoma, Washington"
+  ]
+ ],
+ "d096_medium": [
+  [
+   "Ironford Solar",
+   "Ironford"
+  ],
+  [
+   "August 12, 2027",
+   "August 12"
+  ],
+  [
+   "$1.4 million",
+   "1.4 million"
+  ],
+  [
+   "Reno",
+   "Reno, Nevada"
+  ]
+ ],
+ "d097_short": [
+  [
+   "Stoneview Freight",
+   "Stoneview"
+  ],
+  [
+   "November 9, 2026",
+   "November 9"
+  ],
+  [
+   "$772,000",
+   "772,000"
+  ],
+  [
+   "Knoxville",
+   "Knoxville, Tennessee"
+  ]
+ ],
+ "d098_short": [
+  [
+   "Greenview Market",
+   "Greenview"
+  ],
+  [
+   "December 15, 2026",
+   "December 15"
+  ],
+  [
+   "$23",
+   "23"
+  ],
+  [
+   "Kalamazoo",
+   "Kalamazoo, Michigan"
+  ]
+ ],
+ "d099_short": [
+  [
+   "Meadowwater Water",
+   "Meadowwater"
+  ],
+  [
+   "April 21, 2027",
+   "April 21"
+  ],
+  [
+   "$4.0 million",
+   "4.0 million"
+  ],
+  [
+   "Manchester",
+   "Manchester, New Hampshire"
+  ]
+ ],
+ "d100_medium": [
+  [
+   "Sunwood Solar",
+   "Sunwood"
+  ],
+  [
+   "September 3, 2026",
+   "September 3"
+  ],
+  [
+   "$63 million",
+   "63 million"
+  ],
+  [
+   "Wichita",
+   "Wichita, Kansas"
+  ]
+ ]
+}

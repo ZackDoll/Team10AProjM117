@@ -1,0 +1,7 @@
+Grant summary: scheduling tools study at Ironwater Software
+
+Ironwater Software has received a grant of $1.4 million, awarded on October 28, 2026, to study how its scheduling tools perform in Burlington, Vermont. The work will be led by Rosa Ahmed together with about 36 engineers.
+
+Risks: results may be harder to compare than expected, and participants may leave the study early. The team plans to track these problems and describe them openly.
+
+Results from the $1.4 million study will be shared with the public once the analysis is complete.

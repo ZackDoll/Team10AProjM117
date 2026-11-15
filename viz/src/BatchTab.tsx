@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getBatch, getDocs, getStatus, getTemplates, modelSlug, startBatch, stopBatch } from './api';
-import type { BatchRow, BatchState, Status, Template } from './api';
+import { getBatch, getDocs, getManifest, getStatus, getTemplates, modelSlug, startBatch, stopBatch } from './api';
+import type { BatchRow, BatchState, DocMeta, Status, Template } from './api';
 import type { PipelineSpec, Run } from './types';
 
 interface Props {
@@ -34,6 +34,8 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
   const [dSel, setDSel] = useState<string[]>([]);
   const [tSel, setTSel] = useState<string[]>([]);
   const [posSel, setPosSel] = useState<string[]>(['middle']);
+  const [manifest, setManifest] = useState<DocMeta[]>([]);
+  const [assignedMode, setAssignedMode] = useState(false); // each document with its own assigned poison
   const [seedText, setSeedText] = useState('1');
   const [withClean, setWithClean] = useState(true);
   const [backend, setBackend] = useState<Backend>('anthropic');
@@ -49,9 +51,11 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     getDocs().then(ds => {
       const names = ds.map(d => d.name).filter(n => !/poisoned/.test(n));
       setDocNames(names);
-      setDSel(names.filter(n => n.endsWith('d1.txt')).slice(0, 1));
+      // the default selection must not overwrite a choice made before this response arrived
+      setDSel(prev => (prev.length ? prev : names.filter(n => n.endsWith('d1.txt')).slice(0, 1)));
     }).catch(() => {});
-    getTemplates().then(ts => { setTemplates(ts); setTSel(ts.map(t => t.id)); }).catch(() => {});
+    getTemplates().then(ts => { setTemplates(ts); setTSel(prev => (prev.length ? prev : ts.map(t => t.id))); }).catch(() => {});
+    getManifest().then(setManifest).catch(() => {});
   }, []);
   useEffect(() => {
     setPSel(prev => (prev.length ? prev : pipelines.filter(p => p.builtin).map(p => p.id)));
@@ -81,6 +85,10 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     return xs.every(x => Number.isInteger(x) && x >= 0) ? [...new Set(xs)] : null;
   }, [seedText]);
 
+  const meta = useMemo(() => new Map(manifest.map(m => [m.id, m])), [manifest]);
+  const unassigned = assignedMode ? dSel.filter(d => !meta.has(docStem(d))) : [];
+  const tierOf = (name: string) => meta.get(docStem(name))?.tier;
+
   /** the model a run on this backend uses (the stub ignores the configured one) */
   const model = backend === 'anthropic' ? status?.model : backend === 'ollama' ? status?.ollamaModel : 'stub';
 
@@ -90,10 +98,17 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     const out: Planned[] = [];
     const mk = (p: string, d: string, t: string | null, pos: string | null, s: number) =>
       out.push({ id: `${p}__${docStem(d)}__${t ?? 'clean'}__${pos ?? 'na'}__s${s}__${modelSlug(model ?? '')}`, pipeline: p, doc: d, template: t, position: pos, seed: s });
-    for (const p of pSel) for (const d of dSel) for (const t of tSel) for (const pos of POSITIONS.filter(x => posSel.includes(x))) for (const s of seeds) mk(p, d, t, pos, s);
+    if (assignedMode) {
+      for (const p of pSel) for (const d of dSel) {
+        const m = meta.get(docStem(d));
+        if (m) for (const s of seeds) mk(p, d, m.assigned_template, m.assigned_position, s);
+      }
+    } else {
+      for (const p of pSel) for (const d of dSel) for (const t of tSel) for (const pos of POSITIONS.filter(x => posSel.includes(x))) for (const s of seeds) mk(p, d, t, pos, s);
+    }
     if (withClean) for (const p of pSel) for (const d of dSel) for (const s of seeds) mk(p, d, null, null, s);
     return out;
-  }, [pSel, dSel, tSel, posSel, seeds, withClean, model]);
+  }, [pSel, dSel, tSel, posSel, seeds, withClean, model, assignedMode, meta]);
 
   const existing = useMemo(() => {
     const byName = new Map(runs.map(r => [r.name, r]));
@@ -116,6 +131,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
   const tooMany = plan.length > maxRuns;
   const invalid = !seeds ? 'Seeds must be whole numbers, separated by spaces or commas.'
     : !pSel.length ? 'Pick at least one pipeline.' : !dSel.length ? 'Pick at least one document.'
+    : unassigned.length ? `${unassigned.length} selected document${unassigned.length > 1 ? 's have' : ' has'} no assigned poison (only the documents in data/docs do): ${unassigned.slice(0, 3).map(docStem).join(', ')}${unassigned.length > 3 ? ', …' : ''}`
     : !plan.length ? 'Nothing to run: pick attack templates (and a position) or include clean runs.'
     : tooMany ? `${plan.length} runs is over the cap of ${maxRuns}. Raise the cap on purpose, or pick fewer.`
     : keyMissing ? 'No ANTHROPIC_API_KEY in .env.' : ollamaDown ? 'Ollama is not running (see docs/OLLAMA.md).' : null;
@@ -125,7 +141,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
     setError(null); setBatch(null); seen.current = 0;
     try {
       const { job: id } = await startBatch({
-        pipelines: pSel, docs: dSel, templateIds: tSel, positions: posSel, seeds, withClean, backend, maxRuns,
+        pipelines: pSel, docs: dSel, templateIds: tSel, positions: posSel, seeds, withClean, backend, maxRuns, assigned: assignedMode,
       });
       setFrozen(plan); setJob(id);
     } catch (e) { setError((e as Error).message); }
@@ -189,12 +205,27 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
           ))}
         </fieldset>
         <fieldset disabled={running}>
-          <legend>Documents</legend>
-          {docNames.map(d => (
-            <label key={d} className="check"><input type="checkbox" checked={dSel.includes(d)} onChange={() => setDSel(toggle(dSel, d))} />{d}</label>
-          ))}
+          <legend>Documents ({dSel.length}/{docNames.length}){' '}
+            <button type="button" className="linkish" onClick={() => setDSel(docNames)}>all</button>{' '}
+            <button type="button" className="linkish" onClick={() => setDSel([])}>none</button>
+            {manifest.length > 0 && (['short', 'medium', 'long'] as const).map(t => (
+              <span key={t}>{' '}<button type="button" className="linkish" title={`select the ${t} documents only`}
+                onClick={() => setDSel(docNames.filter(n => tierOf(n) === t))}>{t}</button></span>
+            ))}
+          </legend>
+          <div className="scroll-list">
+            {docNames.map(d => (
+              <label key={d} className="check"><input type="checkbox" checked={dSel.includes(d)} onChange={() => setDSel(toggle(dSel, d))} />{d}</label>
+            ))}
+          </div>
+          {manifest.length > 0 && (
+            <label className="check" title="Each document in data/docs is paired with one attack template and one position, balanced across all 100">
+              <input type="checkbox" checked={assignedMode} onChange={e => setAssignedMode(e.target.checked)} />
+              each document's assigned poison
+            </label>
+          )}
         </fieldset>
-        <fieldset disabled={running}>
+        <fieldset disabled={running || assignedMode} title={assignedMode ? "Not used: each document brings its own assigned template" : undefined}>
           <legend>Attack templates <button type="button" className="linkish" onClick={() => setTSel(templates.map(t => t.id))}>all</button>{' '}
             <button type="button" className="linkish" onClick={() => setTSel([])}>none</button></legend>
           <div className="scroll-list">
@@ -203,12 +234,11 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
             ))}
           </div>
         </fieldset>
-        <fieldset disabled={running}>
+        <fieldset disabled={running || assignedMode} title={assignedMode ? "Not used: each document brings its own assigned position" : undefined}>
           <legend>Positions</legend>
           {POSITIONS.map(p => (
             <label key={p} className="check"><input type="checkbox" checked={posSel.includes(p)} onChange={() => setPosSel(toggle(posSel, p))} />{p}</label>
           ))}
-          <label className="check"><input type="checkbox" checked={withClean} onChange={e => setWithClean(e.target.checked)} />also run clean (no attack)</label>
         </fieldset>
         <fieldset disabled={running}>
           <legend>Settings</legend>
@@ -222,6 +252,7 @@ export function BatchTab({ pipelines, runs, onRefresh, onOpenRun }: Props) {
               <option value="stub">stub (free)</option>
             </select>
           </label>
+          <label className="check"><input type="checkbox" checked={withClean} onChange={e => setWithClean(e.target.checked)} />also run clean (no attack)</label>
           <label>Run cap <span className="hint">(safety)</span>
             <input type="number" min={1} max={1000} value={maxRuns} onChange={e => setMaxRuns(Math.max(1, Math.floor(Number(e.target.value) || 1)))} style={{ width: '6em' }} />
           </label>

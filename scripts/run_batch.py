@@ -10,6 +10,8 @@ transcripts in logs/transcripts/, and show up in the viewer.
   (drop --dry-run to actually call the model; --max-runs caps how many runs happen)
 
   --template-ids t1 t2   only these templates      --with-clean   also run each document unpoisoned
+  --assigned             run each document with its own assigned poison (a template and a position from
+                         data/docs/manifest.json) instead of every template x position
   --backend/--model/--config pick the model        --json         one JSON object per line (the viewer's batch tab)
 
 The model is part of the run id, so a batch on another model writes its own logs. Rerunning the same
@@ -52,7 +54,9 @@ def main() -> None:
     ap.add_argument("--templates", type=Path, default=None, help="default: data/attacks/templates.json")
     ap.add_argument("--template-ids", nargs="+", help="only these template ids")
     ap.add_argument("--docs", nargs="+", type=Path, required=True)
-    ap.add_argument("--positions", nargs="+", default=["middle"], choices=list(POSITIONS))
+    ap.add_argument("--positions", nargs="+", default=None, choices=list(POSITIONS), help="default: middle")
+    ap.add_argument("--assigned", action="store_true", help="use each document's assigned template and position")
+    ap.add_argument("--manifest", type=Path, default=ROOT / "data" / "docs" / "manifest.json")
     ap.add_argument("--pipelines", nargs="+", default=["chain", "orchestrator"], help="pipeline ids")
     ap.add_argument("--seeds", nargs="+", type=int, default=[1])
     ap.add_argument("--with-clean", action="store_true", help="also run each document unpoisoned, per pipeline and seed")
@@ -90,11 +94,30 @@ def main() -> None:
     for d in a.docs:
         if not d.is_file():
             die(f"no such document: {d}")
+    if a.assigned and (a.template_ids or a.positions or a.no_attacks):
+        die("--assigned uses each document's own template and position; drop --template-ids, --positions and --no-attacks")
+    assigned: dict[str, tuple[dict, str]] = {}
+    if a.assigned:
+        try:
+            by_id = {t["id"]: t for t in (load_templates(a.templates) if a.templates else load_templates())}
+            for m in json.loads(a.manifest.read_text(encoding="utf-8")):
+                if m["assigned_template"] in by_id:
+                    assigned[m["id"]] = (by_id[m["assigned_template"]], m["assigned_position"])
+        except (OSError, KeyError, json.JSONDecodeError) as e:
+            die(f"could not read the manifest {a.manifest}: {e}")
+        missing = [d.stem for d in a.docs if d.stem not in assigned]
+        if missing:
+            die(f"no assigned poison (or an unknown template) for: {missing[:5]}{' ...' if len(missing) > 5 else ''}")
+    if a.positions is None:
+        a.positions = ["middle"]
 
     cfg = Config.load(a.config, backend=a.backend, model=a.model)
     meter = CostMeter(cfg.budget_usd, cfg.prices_per_mtok)
 
-    plan = [(p, d, t, pos, s) for p, d, t, pos, s in itertools.product(a.pipelines, a.docs, templates, a.positions, a.seeds)]
+    if a.assigned:
+        plan = [(p, d, assigned[d.stem][0], assigned[d.stem][1], s) for p, d, s in itertools.product(a.pipelines, a.docs, a.seeds)]
+    else:
+        plan = [(p, d, t, pos, s) for p, d, t, pos, s in itertools.product(a.pipelines, a.docs, templates, a.positions, a.seeds)]
     if a.with_clean:
         plan += [(p, d, None, None, s) for p, d, s in itertools.product(a.pipelines, a.docs, a.seeds)]
     if not plan:

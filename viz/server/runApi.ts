@@ -8,6 +8,7 @@
 //   GET  /api/status        python path, key/Ollama availability, models, session spend
 //   GET  /api/docs          .txt documents under data/ (name + text), for the document picker
 //   GET  /api/templates     attack payload templates (data/attacks/templates.json)
+//   GET  /api/manifest      data/docs/manifest.json: each document's length tier and assigned poison
 //   POST /api/inject        {doc, templateId, position} -> the document with the payload inserted (preview)
 //   GET/POST/DELETE /api/pipelines[/<id>], POST /api/pipelines/validate   the pipeline builder
 //   POST /api/batch         start scripts/run_batch.py; GET /api/batch/<job> progress; POST /api/batch/<job>/stop
@@ -214,6 +215,11 @@ export function runApi(): Plugin {
               : [];
             return send(res, 200, logs);
           }
+          if (req.method === 'GET' && url.pathname === '/manifest') {
+            // per-document facts for data/docs: length tier and the assigned poison (a template and a position)
+            const mp = join(DATA_DIR, 'docs', 'manifest.json');
+            return send(res, 200, existsSync(mp) ? JSON.parse(readFileSync(mp, 'utf8')) : []);
+          }
           if (req.method === 'GET' && url.pathname === '/templates') {
             try { return send(res, 200, JSON.parse(readFileSync(join(DATA_DIR, 'attacks', 'templates.json'), 'utf8'))); }
             catch (e) { return send(res, 500, { error: `data/attacks/templates.json: ${(e as Error).message}` }); }
@@ -362,12 +368,13 @@ export function runApi(): Plugin {
             const backend = String(b.backend ?? '');
             const maxRuns = Number(b.maxRuns);
             const withClean = b.withClean === true;
+            const assigned = b.assigned === true; // each document with its own assigned poison, not every template x position
             const docNames = new Set(listTxt(DATA_DIR).map(d => d.name));
             if (!pipelinesSel.length || !pipelinesSel.every(pipelineExists)) return send(res, 400, { error: 'pick existing pipelines' });
             if (!docsSel.length || !docsSel.every(d => docNames.has(d))) return send(res, 400, { error: 'pick documents from data/' });
             if (!tplSel.every(t => ID_RE.test(t))) return send(res, 400, { error: 'bad template id' });
-            if (!tplSel.length && !withClean) return send(res, 400, { error: 'pick at least one attack template, or include clean runs' });
-            if (tplSel.length && (!positions.length || !positions.every(p => ['start', 'middle', 'end'].includes(p))))
+            if (!assigned && !tplSel.length && !withClean) return send(res, 400, { error: 'pick at least one attack template, or include clean runs' });
+            if (!assigned && tplSel.length && (!positions.length || !positions.every(p => ['start', 'middle', 'end'].includes(p))))
               return send(res, 400, { error: 'pick at least one position' });
             if (!seeds.length || seeds.length > 20 || !seeds.every(s => Number.isInteger(s) && s >= 0 && s <= 1e9))
               return send(res, 400, { error: 'seeds: up to 20 whole numbers' });
@@ -384,7 +391,8 @@ export function runApi(): Plugin {
             const args = [join('scripts', 'run_batch.py'), '--json', '--config', CONFIG_FOR[backend], '--backend', backend,
               '--docs', ...docsSel.map(d => join('data', d)), '--pipelines', ...pipelinesSel,
               '--seeds', ...seeds.map(String), '--max-runs', String(maxRuns)];
-            if (tplSel.length) args.push('--template-ids', ...tplSel, '--positions', ...positions);
+            if (assigned) args.push('--assigned');
+            else if (tplSel.length) args.push('--template-ids', ...tplSel, '--positions', ...positions);
             else args.push('--no-attacks');
             if (withClean) args.push('--with-clean');
 
