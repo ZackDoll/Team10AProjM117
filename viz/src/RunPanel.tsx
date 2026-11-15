@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Detail } from './Detail';
 import { Diagram } from './Diagram';
 import { analyze } from './parse';
 import { Timeline } from './Timeline';
+import { Transcript } from './Transcript';
 import type { Run, Topology } from './types';
 
 interface Props {
@@ -25,6 +26,8 @@ const Chip = ({ k, v }: { k: string; v: unknown }) => (
 
 export function RunPanel({ index, run, runs, step, marker, speed, animStep, onPickRun, onPickTopology, onJump }: Props) {
   const a = useMemo(() => analyze(run, step, marker), [run, step, marker]);
+  const [view, setView] = useState<'replay' | 'transcript'>('replay');
+  const pipelineIds = useMemo(() => [...new Set(runs.map(r => r.topology))], [runs]);
   const s = run.start;
   const animKey = animStep >= 1 && animStep === step && step <= run.M ? `${run.name}#${step}` : null;
 
@@ -46,13 +49,11 @@ export function RunPanel({ index, run, runs, step, marker, speed, animStep, onPi
             {runs.map((r, i) => <option key={i} value={i}>{r.name}</option>)}
           </select>
         </label>
-        <div className="topo" role="group" aria-label="Show a run with this topology">
-          {(['chain', 'orchestrator'] as const).map(t => (
-            <button key={t} type="button" aria-pressed={run.topology === t} onClick={() => onPickTopology(t)}>
-              {t === 'chain' ? 'Chain' : 'Orchestrator'}
-            </button>
-          ))}
-        </div>
+        <label>Pipeline <span className="hint">(jumps to a run of it)</span>
+          <select value={run.topology} onChange={e => onPickTopology(e.target.value)}>
+            {pipelineIds.map(id => <option key={id} value={id}>{runs.find(r => r.topology === id)?.pipeline.name || id}</option>)}
+          </select>
+        </label>
       </div>
 
       <div className="summary">
@@ -76,9 +77,23 @@ export function RunPanel({ index, run, runs, step, marker, speed, animStep, onPi
           : s.template_id ? <span className="hint">template: {s.template_id}</span> : null}
       </div>
 
-      <Diagram run={run} a={a} marker={marker} animKey={animKey} speed={speed} />
-      <Detail run={run} a={a} marker={marker} />
-      <Timeline run={run} a={a} onJump={onJump} />
+      <div className="tabs" role="tablist" aria-label="What to show for this run">
+        {(['replay', 'transcript'] as const).map(v => (
+          <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => setView(v)}>
+            {v === 'replay' ? 'Replay' : 'Transcript'}
+          </button>
+        ))}
+      </div>
+
+      {view === 'replay' ? (
+        <>
+          <Diagram run={run} a={a} marker={marker} animKey={animKey} speed={speed} />
+          <Detail run={run} a={a} marker={marker} />
+          <Timeline run={run} a={a} onJump={onJump} />
+        </>
+      ) : (
+        <Transcript run={run} marker={marker} step={a.s} onJump={onJump} />
+      )}
     </section>
   );
 }

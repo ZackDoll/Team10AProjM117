@@ -1,8 +1,8 @@
 # Running against a local model (Ollama)
 
-Claude resisted all 24 attack attempts we tried (see the batch run notes). A small local model is
-a useful contrast: it costs nothing, has no rate limit, and has had none of the deliberate
-training against prompt injection that Claude has, so it should fold on attacks Claude ignores.
+Claude Haiku resisted all 24 attack attempts we tried at first (the Reader drops the embedded
+instruction when it summarizes). A small local model is a useful contrast: it costs nothing, has no
+rate limit, and has had none of the deliberate training against prompt injection that Claude has.
 
 ## Setup
 1. Install Ollama: https://ollama.com/download (Windows/Mac/Linux installer, or `winget install
@@ -11,22 +11,25 @@ training against prompt injection that Claude has, so it should fold on attacks 
    run `ollama serve` in its own terminal).
 3. Pull a small instruct model:
    ```
-   ollama pull qwen2.5:1.5b-instruct
+   ollama pull qwen2.5:3b-instruct
    ```
-   That's about 1 GB and runs fine on CPU. If it still resists every attack, try something
-   smaller: `ollama pull qwen2.5:0.5b-instruct`. For a bit more capability (and probably still
-   weak), `ollama pull llama3.2:3b-instruct`.
-4. Point the pipeline at it: `config/local.yaml` is already set up for
-   `qwen2.5:1.5b-instruct`. Edit its `model:` line if you pulled a different one.
+   About 2 GB, runs fine on CPU. **Smaller is not better here:** `qwen2.5:1.5b-instruct` never calls
+   `send_message` at all (it answers in plain text, even on a clean run), so there is no tool call for an
+   attack to hijack. 3B is the smallest we found that uses the tool reliably. `llama3.2:3b-instruct` is
+   another option.
+4. Point the pipeline at it: `config/local.yaml` is already set up for `qwen2.5:3b-instruct`. Edit its
+   `model:` line if you pulled a different one.
 
 ## Run it
 ```
 python scripts/run_one.py --topology chain --doc data/placeholder/d1.txt --config config/local.yaml
 python scripts/run_batch.py --docs data/placeholder/d1.txt --config config/local.yaml --positions start middle end --max-runs 60
 ```
-Or from the viewer: `cd viz && npm run dev`, then pick **Backend: stub** is still free-only there
-today -- the New-run box talks to the `anthropic` and `stub` backends. To use Ollama from the
-viewer too, say so and I'll add it as a third option.
+Or from the viewer (`cd viz && npm run dev`): choose **Local: qwen2.5:3b-instruct** as the backend in
+New run or in the Batch tab. If Ollama isn't running the option says so.
+
+Run ids don't include the model, so a batch on the local model replaces earlier logs of the same
+combination made with Claude (and vice versa). The Batch tab warns before it does.
 
 ## Notes
 - No API key, no `.env` entry, and no budget cap that matters -- `prices_per_mtok` has no entry

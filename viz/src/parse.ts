@@ -1,7 +1,55 @@
-import type { Ev, Run, Topology } from './types';
+import { labelOf } from './layouts';
+import { PRESET_FALLBACK } from './presets';
+import type { Ev, PipelineSpec, Run } from './types';
 
-export const WORKERS = ['reader', 'analyst', 'tool_user'] as const;
-const DEPTH_LABEL: Record<string, string> = { reader: 'reader', analyst: 'analyst', tool_user: 'tool user' };
+/** The agents of a pipeline in the order information can reach them: topological, with a hub
+ *  replaced by its spokes. "Spread depth" is the last of these whose output holds the marker. */
+export function agentOrder(p: PipelineSpec, withHubs = false): string[] {
+  const byId = new Map(p.nodes.map(n => [n.id, n]));
+  const spokes = new Set(p.nodes.flatMap(n => (n.type === 'hub' ? n.spokes ?? [] : [])));
+  const main = p.nodes.map(n => n.id).filter(i => !spokes.has(i));
+  const indeg = new Map(main.map(i => [i, 0]));
+  for (const e of p.edges) if (e.to !== 'user' && indeg.has(e.to) && indeg.has(e.from)) indeg.set(e.to, indeg.get(e.to)! + 1);
+  const order: string[] = [];
+  const ready = main.filter(i => indeg.get(i) === 0);
+  while (ready.length) {
+    ready.sort((a, b) => main.indexOf(a) - main.indexOf(b));
+    const x = ready.shift()!;
+    order.push(x);
+    for (const e of p.edges) {
+      if (e.from === x && indeg.has(e.to) && e.to !== 'user') {
+        indeg.set(e.to, indeg.get(e.to)! - 1);
+        if (indeg.get(e.to) === 0) ready.push(e.to);
+      }
+    }
+  }
+  for (const i of main) if (!order.includes(i)) order.push(i); // invalid specs: still list everything
+  return order.flatMap(id => {
+    const n = byId.get(id)!;
+    if (n.type !== 'hub') return [id];
+    const spokes = (n.spokes ?? []).filter(s => byId.has(s));
+    return withHubs ? [id, ...spokes] : spokes; // the hub itself only when asked: it relays, it doesn't hold information
+  });
+}
+
+/** Everything each node of a run produced: the messages it sent, plus any send_message it made. */
+export function nodeOutputs(run: Run): Record<string, string[]> {
+  const out: Record<string, string[]> = Object.fromEntries(run.pipeline.nodes.map(n => [n.id, [] as string[]]));
+  for (const e of run.events) {
+    if (e.event === 'message' && e.sender in out) out[e.sender].push(String(e.content ?? ''));
+    if (e.event === 'tool_call') {
+      const who = e.caller || 'tool_user';
+      if (who in out) out[who].push(`send_message to ${e.args?.to ?? ''}:\n${e.args?.body ?? ''}`);
+    }
+  }
+  return out;
+}
+
+/** The clean run to compare an attacked run against: same pipeline, document, seed and model, no template. */
+export function findClean(runs: Run[], attacked: Run): number {
+  return runs.findIndex(r => !r.start.template_id && r.topology === attacked.topology
+    && r.start.doc_id === attacked.start.doc_id && r.start.seed === attacked.start.seed && r.start.model === attacked.start.model);
+}
 
 export function parseRun(name: string, text: string): Run {
   const events: Ev[] = [];
@@ -17,14 +65,25 @@ export function parseRun(name: string, text: string): Run {
   if (!start) throw new Error(`${name}: no run_start event, so this is not a run log`);
   const msgIdx: number[] = [];
   events.forEach((e, i) => { if (e.event === 'message') msgIdx.push(i); });
-  let topology = start.topology as Topology;
-  if (topology !== 'chain' && topology !== 'orchestrator') {
-    topology = msgIdx.some(i => events[i].sender === 'orchestrator' || events[i].receiver === 'orchestrator')
-      ? 'orchestrator' : 'chain';
+  // The pipeline the run used. Logs from before run_start carried it fall back to a graph-only
+  // copy of chain/orchestrator so they still draw.
+  const raw = start.pipeline;
+  const hasPrompts = !!raw && Array.isArray(raw.nodes) && Array.isArray(raw.edges) && typeof raw.output === 'string';
+  let topology = String(start.topology ?? '');
+  let pipeline: PipelineSpec;
+  if (hasPrompts) {
+    pipeline = raw as PipelineSpec;
+    topology = topology || pipeline.id;
+  } else {
+    if (!(topology in PRESET_FALLBACK)) {
+      topology = msgIdx.some(i => events[i].sender === 'orchestrator' || events[i].receiver === 'orchestrator')
+        ? 'orchestrator' : 'chain';
+    }
+    pipeline = PRESET_FALLBACK[topology];
   }
   const canary: string = start.canary || '';
   const run: Run = {
-    name, events, msgIdx, M: msgIdx.length, start, topology, canary,
+    name, events, msgIdx, M: msgIdx.length, start, topology, pipeline, hasPrompts, canary,
     end: events.find(e => e.event === 'run_end'),
     userAddr: start.config?.user_address || 'user@example.com',
     leaked: false,
@@ -78,7 +137,7 @@ export function analyze(run: Run, step: number, marker: string): Analysis {
   const mlow = marker.trim().toLowerCase();
 
   // what each agent has produced so far: messages it sent, plus its tool-call bodies
-  const out: Record<string, string> = { reader: '', analyst: '', tool_user: '', orchestrator: '' };
+  const out: Record<string, string> = Object.fromEntries(run.pipeline.nodes.map(n => [n.id, '']));
   for (const e of shown) {
     if (e.event === 'message' && e.sender in out) out[e.sender] += '\n' + String(e.content ?? '');
     if (e.event === 'tool_call') {
@@ -92,7 +151,7 @@ export function analyze(run: Run, step: number, marker: string): Analysis {
   const msg = s >= 1 ? run.events[run.msgIdx[s - 1]] : null;
   const windowEvents = s >= 1 ? run.events.slice(run.msgIdx[s - 1] + 1, end + 1) : [];
   let depth = 'none';
-  for (const w of WORKERS) if (carries[w]) depth = DEPTH_LABEL[w];
+  for (const w of agentOrder(run.pipeline)) if (carries[w]) depth = labelOf(run.pipeline, w).toLowerCase();
 
   return {
     s, end, msg,
@@ -107,6 +166,33 @@ export function analyze(run: Run, step: number, marker: string): Analysis {
     depth,
     inDoc: !!mlow && String(run.start.doc_text ?? '').toLowerCase().includes(mlow),
     routes: run.msgIdx.slice(0, s).map((i, n) => `Message ${n + 1}: ${run.events[i].sender} to ${run.events[i].receiver}`),
+  };
+}
+
+export interface RunSummary {
+  leaked: boolean;
+  /** a send_message reached the user's address: the stand-in for task success until the evaluation pair's checker exists */
+  reportSent: boolean;
+  /** furthest agent that carried the marker, 'none', or '-' when there is no marker to trace */
+  depth: string;
+  cost: number | null;
+  /** unix seconds the run started */
+  time: number | null;
+  status: string;
+}
+
+/** One-line facts about a run for tables and grids. `marker` is the payload phrase to trace ('' for none). */
+export function summarize(run: Run, marker: string): RunSummary {
+  const end = run.end;
+  // only the per-run figure: older logs have just the cumulative spent_usd, which is wrong for a run in a batch
+  const cost = end?.cost_usd;
+  return {
+    leaked: run.leaked,
+    reportSent: run.events.some(e => e.event === 'tool_call' && String(e.args?.to ?? '') === run.userAddr),
+    depth: marker.trim() ? analyze(run, run.M, marker).depth : '-',
+    cost: typeof cost === 'number' ? cost : null,
+    time: typeof run.start.ts === 'number' ? run.start.ts : null,
+    status: end ? String(end.status) : 'unfinished',
   };
 }
 

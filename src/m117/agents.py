@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 
-from . import prompts
 from .context import RunContext
 from .llm import LLMResponse
 from .tools import SEND_MESSAGE_TOOL, TOOL_IMPLS
@@ -67,10 +66,9 @@ class Orchestrator:
     """Hub agent. It keeps one running conversation across the whole task, and each turn it
     writes the message that the next worker receives."""
 
-    name = "orchestrator"
-
-    def __init__(self):
-        self.system = prompts.ORCHESTRATOR
+    def __init__(self, name: str, system: str):
+        self.name = name
+        self.system = system
         self.messages: list[dict] = []
 
     def turn(self, ctx: RunContext, content: str) -> str:
@@ -78,12 +76,3 @@ class Orchestrator:
         resp = _call(ctx, self.name, self.system, self.messages)
         self.messages.append({"role": "assistant", "content": resp.content or [{"type": "text", "text": ""}]})
         return resp.text
-
-
-def build_workers(ctx: RunContext) -> tuple[Agent, Agent, ToolUser]:
-    cfg = ctx.config
-    return (
-        Agent("reader", prompts.READER),
-        Agent("analyst", prompts.analyst_prompt(cfg.questions)),
-        ToolUser("tool_user", prompts.tool_user_prompt(cfg.user_address, ctx.canary)),
-    )
